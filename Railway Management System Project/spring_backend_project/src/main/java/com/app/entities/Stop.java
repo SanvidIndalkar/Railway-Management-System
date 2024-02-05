@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 //done
 
@@ -27,6 +28,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Stop extends BaseEntity{
 	
 //	done
@@ -45,10 +47,9 @@ public class Stop extends BaseEntity{
 	@Column(name = "sequence")
 	private Integer sequence;
 	
-	@NotNull
-	@Column(name = "date")
+	@Column(name = "arrival_date")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate date;
+	private LocalDate arrivalDate;
 	
 	@DateTimeFormat(pattern = "HH:mm:ss")
 	@Column(name = "arrival_time")

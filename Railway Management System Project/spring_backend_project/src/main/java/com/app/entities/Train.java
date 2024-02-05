@@ -64,10 +64,14 @@ public class Train extends BaseEntity{
     
 	@NotNull
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@Column(name = "date")
-    private LocalDate date;
-    
+	@Column(name = "source_departure_date")
+    private LocalDate sourceDepartureDate;
 	
+	@NotNull
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "destination_arrival_date")
+    private LocalDate destinationArrivalDate;
+    
 	@DateTimeFormat(pattern = "HH:mm:ss")
 	@Column(name = "source_departure_time")
     private LocalTime sourceDepartureTime;
@@ -81,11 +85,29 @@ public class Train extends BaseEntity{
     private Integer totalStops;
     
 //  done
-    @OneToMany(mappedBy = "train",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "train",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Stop> stops;
     
 //  done
     @OneToMany(mappedBy = "train", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<TrainClasses> trainClasses;
+    
+    public void addStop(Stop stop) {
+    	stop.setTrain(this);
+    	stops.add(stop);
+    }
+    
+    public void removeStop(Stop stop) {
+    	stops.remove(stop);
+    }
+    
+    public void addTrainClass(TrainClasses trainClass) {
+    	trainClass.setTrain(this);
+    	trainClasses.add(trainClass);
+    }
+    
+    public void removeTrainClass(TrainClasses trainClass) {
+    	trainClasses.remove(trainClass);
+    }
     
 }

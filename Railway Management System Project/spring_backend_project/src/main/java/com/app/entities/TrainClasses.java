@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 // done
 
@@ -29,10 +30,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class TrainClasses extends BaseEntity{
 
 //	done
-	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(name = "class_name")
 	private Classes name;
@@ -49,7 +50,7 @@ public class TrainClasses extends BaseEntity{
 	
 	@NotNull
 	@Column(name = "total_seats_available")
-	private Integer totalSeatsAvailble;
+	private Integer totalSeatsAvailable;
 	
 //	done
 	@OneToMany(mappedBy = "trainClass", cascade = CascadeType.ALL,orphanRemoval = true)

@@ -39,4 +39,9 @@ public class SeatAvailability extends BaseEntity{
 	@NotNull
 	@Column(name = "isAvailable",nullable = false)
 	private Boolean isAvailable = true;
+	
+	public SeatAvailability(Seat seat, Stop stop) {
+		this.seat = seat;
+		this.stop = stop;
+	}
 }

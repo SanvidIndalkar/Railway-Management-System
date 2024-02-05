@@ -40,7 +40,6 @@ public class User extends BaseEntity{
     @Column(name = "last_name")
     private String lastName;
 
-    @NotBlank
     @Column(name = "gender", nullable = false)
     private Gender gender;
     
