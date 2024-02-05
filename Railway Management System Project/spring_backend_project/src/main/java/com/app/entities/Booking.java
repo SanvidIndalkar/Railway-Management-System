@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -30,15 +31,16 @@ import lombok.Setter;
 public class Booking extends BaseEntity{
 
 //	done
-	@OneToOne
+	@ManyToOne
 	@NotNull
-	private User userId;
+	@JoinColumn(name = "user_id")
+	private User user;
 	
 //	done
 	@ManyToOne
 	@JoinColumn(name = "train_id")
 	@NotNull
-	private Train trainId;
+	private Train train;
 	
 //	done
 	@ManyToOne
@@ -53,7 +55,7 @@ public class Booking extends BaseEntity{
 	private Station destination;
 	
 //	done
-	@OneToMany(mappedBy = "booking_id",fetch = FetchType.EAGER, cascade = CascadeType.ALL,orphanRemoval = true)
+	@OneToMany(mappedBy = "booking",fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
 	private List<Passenger> passengers;
 
 }

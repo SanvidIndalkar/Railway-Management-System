@@ -1,5 +1,7 @@
 package com.app.entities;
 
+import javax.persistence.Column;
+
 //done
 
 import javax.persistence.Entity;
@@ -20,5 +22,6 @@ import lombok.Setter;
 public class Station extends BaseEntity{
 	
 	@NotBlank
+	@Column(name = "station_name")
 	private String stationName;
 }

@@ -1,7 +1,5 @@
 package com.app.entities;
 
-//done
-
 import java.time.LocalTime;
 
 import javax.persistence.Column;
@@ -11,32 +9,31 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.app.enums.Classes;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+//done
+
+
 @Entity
-@Table(name = "seatAvaibility")
+@Table(name = "seat")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SeatAvailability extends BaseEntity{
+public class Seat extends BaseEntity{
 	
-//	done
-	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "stop_id")
-	private Stop stop;
-	
-//	done
+	@JoinColumn(name = "class_id")
 	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "seat_id")
-	private Seat seat;
+	private TrainClasses trainClass;
 	
 	@NotNull
-	@Column(name = "isAvailable",nullable = false)
-	private Boolean isAvailable = true;
+	@Column(name = "seat_number")
+	private Integer seatNumber;
+	
 }

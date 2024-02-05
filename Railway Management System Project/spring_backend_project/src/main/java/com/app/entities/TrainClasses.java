@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,6 +34,7 @@ public class TrainClasses extends BaseEntity{
 //	done
 	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(name = "class_name")
 	private Classes name;
 	
 //	done
@@ -42,12 +44,14 @@ public class TrainClasses extends BaseEntity{
 	private Train train;
 	
 	@NotNull
+	@Column(name = "total_seats")
 	private Integer totalSeats;
 	
 	@NotNull
+	@Column(name = "total_seats_available")
 	private Integer totalSeatsAvailble;
 	
 //	done
 	@OneToMany(mappedBy = "trainClass", cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Seats> seats;
+    private List<Seat> seats;
 }

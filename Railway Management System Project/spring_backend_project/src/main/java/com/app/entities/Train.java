@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -36,53 +37,55 @@ import lombok.Setter;
 public class Train extends BaseEntity{
 
 	@NotNull
-	@Column(unique = true, nullable = false)
+	@Column(name = "train_number", unique = true, nullable = false)
 	private Long trainNumber;
 	
 	@NotBlank
+	@Column(name = "train_name")
     private String trainName;
 
 //	done
-	@OneToOne
+	@ManyToOne
 	@NotNull
-    private Admin adminId;
+	@JoinColumn(name = "admin_id")
+    private Admin admin;
     
 //	done
-	@OneToOne
+	@ManyToOne
     @JoinColumn(name = "source_station")
 	@NotNull
     private Station source;
     
 //	done
-	@OneToOne
+	@ManyToOne
     @JoinColumn(name = "destination_station")
 	@NotNull
     private Station destination;
     
+	@NotNull
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "date")
     private LocalDate date;
     
+	
 	@DateTimeFormat(pattern = "HH:mm:ss")
+	@Column(name = "source_departure_time")
     private LocalTime sourceDepartureTime;
     
 	@DateTimeFormat(pattern = "HH:mm:ss")
+	@Column(name = "destination_arrival_time")
     private LocalTime destinationArrivalTime;
     
     @NotNull
-    private Integer totalSeats;
-    
-    @NotNull
-    private Integer availableSeats;
-    
-    @NotNull
+    @Column(name = "total_stops",nullable = false)
     private Integer totalStops;
     
 //  done
-    @OneToMany(mappedBy = "train_id",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private List<Stops> stops;
+    @OneToMany(mappedBy = "train",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Stop> stops;
     
 //  done
-    @OneToMany(mappedBy = "train_id", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "train", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<TrainClasses> trainClasses;
     
 }

@@ -29,20 +29,24 @@ import lombok.Setter;
 public class Admin extends BaseEntity{
 	
 	@NotBlank
+	@Column(name = "first_name")
 	private String firstName;
 	
 	@NotBlank
+	@Column(name = "last_name")
 	private String lastName;
 
 	@NotBlank
 	@Email
+	@Column(name = "email")
 	private String email;
 	
-	@Column(nullable=false)
+	@Column(name="password",nullable=false)
 	private String password;
 
 	@NotBlank
 	@Enumerated(EnumType.STRING)
+	@Column(name = "gender")
 	private Gender gender;
 }
 
