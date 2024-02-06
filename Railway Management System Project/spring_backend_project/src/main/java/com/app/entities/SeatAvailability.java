@@ -4,6 +4,7 @@ package com.app.entities;
 
 import java.time.LocalTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -26,13 +27,13 @@ public class SeatAvailability extends BaseEntity{
 	
 //	done
 	@NotNull
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "stop_id")
 	private Stop stop;
 	
 //	done
 	@NotNull
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "seat_id")
 	private Seat seat;
 	

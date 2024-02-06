@@ -10,6 +10,5 @@ public interface AdminService {
 
 	Admin findByEmailAndPassword(Admin admin);
 
-	List<Train> findAllTrains();
 	
 }

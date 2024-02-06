@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import com.app.entities.Station;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +18,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StopDTO {
 	
+	@JsonIgnore
 	private TrainDTO train;
-	private Long stationId;
+	private Station station;
     private Integer sequence;
     private LocalDate arrivalDate;
     private LocalTime arrivalTime;

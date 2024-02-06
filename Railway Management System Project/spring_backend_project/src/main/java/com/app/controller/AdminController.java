@@ -28,9 +28,4 @@ public class AdminController {
 		return "Admin found";
 	}
 	
-	@GetMapping("/allTrains")
-	public List<Train> getAllTrains(){
-		
-		return adminService.findAllTrains();
-	}
 }

@@ -1,5 +1,9 @@
 package com.app.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.StopDTO;
+import com.app.dto.TrainClassesDTO;
 import com.app.dto.TrainDTO;
+import com.app.dto.TrainOnlyDTO;
+import com.app.dto.TrainSrcDestDateDTO;
 import com.app.entities.Train;
 import com.app.service.TrainService;
 
@@ -20,32 +28,114 @@ public class TrainController {
 	@Autowired
 	private TrainService trainService;
 	
+	@Autowired
+	private ModelMapper mapper;
+	
+	//for admin
+	//done
+	//adding a train/scheduling a train
 	@PostMapping("/add")
 	public String addTrain(@RequestBody TrainDTO trainDTO) {
 		
-		trainService.addTrain(trainDTO);
-		return "Request Received";
+		Train train = trainService.addTrain(trainDTO);
+		if(train == null) return "Failed";
+		return "Success";
 	}
 	
-	@GetMapping("/number/{trainNumber}")
-	public String findTrainByNumber(@PathVariable Long trainNumber) {
+	
+	//for admin
+	//done
+	//finding all the trains
+	@GetMapping("/allTrains")
+	public List<TrainOnlyDTO> getAllTrains(){
 		
-		Train train = trainService.findTrainByNumber(trainNumber);
-		if(train == null) return "train not found";
-		return "train found";
+		return trainService.findAllTrains();
+	}
+	
+	
+	//for admin
+	//done
+	//finding all trains of specific admin
+	@GetMapping("admin/allTrain/{adminId}")
+	public List<TrainOnlyDTO> getAllTrainsByAdmin(@PathVariable Long adminId){
+		return trainService.getAllTrainsByAdmin(adminId);
+	}
+	
+	
+	//for admin
+	//done
+	//finding train by Train Number
+	@GetMapping("/number/{trainNumber}")
+	public TrainOnlyDTO findTrainByNumber(@PathVariable Long trainNumber) {
+		
+		TrainOnlyDTO train = trainService.findTrainByNumber(trainNumber);
+		if(train == null) return null;
+		return train;
 	}
 
+	
+	//for admin
+	//done
+	//finding train by Train Name
 	@GetMapping("/name/{trainName}")
-	public String findTrainByName(@PathVariable String trainName) {
+	public TrainOnlyDTO findTrainByName(@PathVariable String trainName) {
 		
-		Train train = trainService.findTrainByName(trainName);
-		if(train == null) return "train not found";
-		return "train found by name";
+		TrainOnlyDTO train = trainService.findTrainByName(trainName);
+		if(train == null) return null;
+		return train;
 	}
 	
+	
+	//for admin
+	//pending
+	//updating train by Train Id
 	@PutMapping("/update/{trainId}")
-	public Train updateTrain(@PathVariable Long trainId, @RequestBody Train train) {
+	public TrainDTO updateTrain(@PathVariable Long trainId, @RequestBody Train train) {
 		return null;
+	}
+	
+	//for admin
+	//pending
+	//reschedule a train by Train Id
+	@PutMapping("/reschedule/{trainId}")
+	public TrainDTO rescheduleTrain(@PathVariable Long trainId, @RequestBody Train train) {
+		return null;
+	}
+	
+	
+	//for user
+	//pending
+	//searching train from one stop to another stop
+	@PostMapping("/searchTrain/startAndStop")
+	public TrainDTO findTrainByTwoStopsInSequence(@RequestBody TrainSrcDestDateDTO searchInfo) {
+		return null;
+	}
+	
+	//for admin and user
+	//done
+	//find train by source and destination and date
+	@PostMapping("/searchTrain")
+	public List<TrainDTO> findTrainBySourceDestinationDate(@RequestBody TrainSrcDestDateDTO srcDestDate){
+		List<TrainDTO> trains = trainService.findTrainBySourceDestinationDate(srcDestDate);
+		return trains;
+	}
+	
+	//for admin and user
+	//done
+	@GetMapping("/searchTrainAllDetails/{trainId}")
+	public TrainDTO findTrainAllDetails(@PathVariable Long trainId) {
+		TrainDTO trainDTO = trainService.findTrainById(trainId);
+		return trainDTO;
+	}
+	
+	
+	
+	//testing for Train as return type
+	//pending
+	@GetMapping("/findTrainById/{trainId}")
+	public TrainDTO findTrainDetailsById(@PathVariable Long trainId) {
+		TrainDTO trainDTO = trainService.findTrainById(trainId);
+		return trainDTO;
 	}
 
 }

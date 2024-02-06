@@ -1,13 +1,25 @@
 package com.app.service;
 
+import java.util.List;
+
 import com.app.dto.TrainDTO;
+import com.app.dto.TrainOnlyDTO;
+import com.app.dto.TrainSrcDestDateDTO;
 import com.app.entities.Train;
 
 public interface TrainService {
 	
 	Train addTrain(TrainDTO trainDTO);
 
-	Train findTrainByNumber(Long trainNumber);
+	TrainOnlyDTO findTrainByNumber(Long trainNumber);
 
-	Train findTrainByName(String trainName);
+	TrainOnlyDTO findTrainByName(String trainName);
+
+	List<TrainOnlyDTO> findAllTrains();
+
+	List<TrainDTO> findTrainBySourceDestinationDate(TrainSrcDestDateDTO srcDestDate);
+
+	TrainDTO findTrainById(Long trainId);
+
+	List<TrainOnlyDTO> getAllTrainsByAdmin(Long adminId);
 }

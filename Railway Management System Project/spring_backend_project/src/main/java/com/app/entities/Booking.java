@@ -54,6 +54,11 @@ public class Booking extends BaseEntity{
 	@NotNull
 	private Station destination;
 	
+// 	done
+	@Column(name = "total_passengers")
+	@NotNull
+	private Integer totalPassengers;
+	
 //	done
 	@OneToMany(mappedBy = "booking",fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
 	private List<Passenger> passengers;

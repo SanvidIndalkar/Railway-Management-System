@@ -28,7 +28,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "train")
 public class Stop extends BaseEntity{
 	
 //	done
@@ -47,6 +47,7 @@ public class Stop extends BaseEntity{
 	@Column(name = "sequence")
 	private Integer sequence;
 	
+	@NotNull
 	@Column(name = "arrival_date")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate arrivalDate;

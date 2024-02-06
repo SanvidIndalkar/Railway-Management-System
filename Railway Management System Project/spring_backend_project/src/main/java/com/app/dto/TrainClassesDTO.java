@@ -8,6 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import com.app.enums.Classes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class TrainClassesDTO {
 	
 
 	private Classes name;
+	@JsonIgnore
 	private TrainDTO train;
     private Integer totalSeats;
     private Integer totalSeatsAvailable;
