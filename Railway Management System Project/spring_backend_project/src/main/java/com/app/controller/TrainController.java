@@ -17,6 +17,7 @@ import com.app.dto.StopDTO;
 import com.app.dto.TrainClassesDTO;
 import com.app.dto.TrainDTO;
 import com.app.dto.TrainOnlyDTO;
+import com.app.dto.TrainRescheduleDTO;
 import com.app.dto.TrainSrcDestDateDTO;
 import com.app.entities.Train;
 import com.app.service.TrainService;
@@ -87,28 +88,23 @@ public class TrainController {
 	
 	
 	//for admin
-	//pending
-	//updating train by Train Id
-	@PutMapping("/update/{trainId}")
-	public TrainDTO updateTrain(@PathVariable Long trainId, @RequestBody Train train) {
-		return null;
-	}
-	
-	//for admin
-	//pending
+	//done
 	//reschedule a train by Train Id
 	@PutMapping("/reschedule/{trainId}")
-	public TrainDTO rescheduleTrain(@PathVariable Long trainId, @RequestBody Train train) {
-		return null;
+	public String rescheduleTrain(@PathVariable Long trainId, @RequestBody TrainRescheduleDTO trainRescheduleDTO) {
+		trainRescheduleDTO.setId(trainId);
+		String message = trainService.reschuduleTrain(trainRescheduleDTO);
+		return message;
 	}
 	
 	
 	//for user
-	//pending
+	//done
 	//searching train from one stop to another stop
 	@PostMapping("/searchTrain/startAndStop")
-	public TrainDTO findTrainByTwoStopsInSequence(@RequestBody TrainSrcDestDateDTO searchInfo) {
-		return null;
+	public List<TrainDTO> findTrainsByTwoStopsInSequence(@RequestBody TrainSrcDestDateDTO searchInfo) {
+		List<TrainDTO> trains = trainService.findTrainsByTwoStopsInSequence(searchInfo);
+		return trains;
 	}
 	
 	//for admin and user

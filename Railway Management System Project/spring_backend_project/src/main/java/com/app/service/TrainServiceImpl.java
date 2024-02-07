@@ -1,7 +1,9 @@
 package com.app.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ import com.app.dto.StopDTO;
 import com.app.dto.TrainClassesDTO;
 import com.app.dto.TrainDTO;
 import com.app.dto.TrainOnlyDTO;
+import com.app.dto.TrainRescheduleDTO;
 import com.app.dto.TrainSrcDestDateDTO;
 import com.app.entities.Admin;
 import com.app.entities.Seat;
@@ -223,6 +226,89 @@ public class TrainServiceImpl implements TrainService{
 		return null;
 	}
 
+
+
+	@Override
+	public List<TrainDTO> findTrainsByTwoStopsInSequence(TrainSrcDestDateDTO searchInfo) {
+		
+		List<TrainDTO> matchingTrains = new ArrayList<TrainDTO>();
+		List<Train> trainsByDate = trainDao.findBySourceDepartureDate(searchInfo.getJourneyDate());
+		System.out.println("Trains : " + trainsByDate.size());
+		
+		for(Train trainByDate : trainsByDate) {
+			trainByDate.getStops().size();
+			List<Stop> stops = trainByDate.getStops();
+			Collections.sort(stops);
+			
+			int sourceIndex = -1;
+	        int destinationIndex = -1;
+			
+			// Find the indices of source and destination stations in the sorted stops list
+	        for (int i = 0; i < stops.size(); i++) {
+	            Stop stop = stops.get(i);
+	            if (stop.getStation().getId().equals(searchInfo.getSource().getId())) {
+	                sourceIndex = i;
+	            } else if (stop.getStation().getId().equals(searchInfo.getDestination().getId())) {
+	                destinationIndex = i;
+	            }
+	        }
+
+	        // Ensure source station appears before destination station
+	        if (sourceIndex != -1 && destinationIndex != -1 && sourceIndex < destinationIndex) {
+	            // Match found, add train to the result
+	            matchingTrains.add(convertTrainToTrainDTO(trainByDate));
+	        }
+	        else if(destinationIndex != -1 && sourceIndex == -1 && trainByDate.getSource().getId().equals(searchInfo.getSource().getId())) {
+	        	matchingTrains.add(convertTrainToTrainDTO(trainByDate));	        	
+	        }
+	        else if(destinationIndex == -1 && sourceIndex != -1 && trainByDate.getDestination().getId().equals(searchInfo.getDestination().getId())) {
+	        	matchingTrains.add(convertTrainToTrainDTO(trainByDate));	        	
+	        }
+		}
+		return matchingTrains;
+	}
+
+	//converting Train into TrainDTO
+	public TrainDTO convertTrainToTrainDTO(Train train) {
+		
+		if(train != null) {
+			TrainDTO trainDTO = mapper.map(train, TrainDTO.class);
+   		 	train.getStops().size();
+   		 	train.getTrainClasses().size();
+
+   		 	// Map stops to StopDTO
+   		 	List<StopDTO> stopDTOList = train.getStops().stream()
+   		 	.map(stop -> mapper.map(stop, StopDTO.class))
+   		 	.collect(Collectors.toList());
+   		 	trainDTO.setStops(stopDTOList);
+
+   		 	// Map train classes to TrainClassesDTO
+   		 	List<TrainClassesDTO> trainClassesDTOList = train.getTrainClasses().stream()
+   		 			.map(trainClass -> mapper.map(trainClass, TrainClassesDTO.class))
+   		 			.collect(Collectors.toList());
+   		 	trainDTO.setTrainClasses(trainClassesDTOList);
+   		 	return trainDTO;
+   	 	}  
+		return null;
+	}
+
+
+	@Override
+	public String reschuduleTrain(TrainRescheduleDTO trainRescheduleDTO) {
+		LocalDate sourceDepartureDate = trainRescheduleDTO.getSourceDepartureDate();
+	    LocalDate destinationArrivalDate = trainRescheduleDTO.getDestinationArrivalDate();
+	    LocalTime sourceDepartureTime = trainRescheduleDTO.getSourceDepartureTime(); 
+	    LocalTime destinationArrivalTime = trainRescheduleDTO.getDestinationArrivalTime();
+	    
+	    Train train = trainDao.findById(trainRescheduleDTO.getId()).orElseThrow();
+	    train.setSourceDepartureDate(sourceDepartureDate);
+	    train.setDestinationArrivalDate(destinationArrivalDate);
+	    train.setSourceDepartureTime(sourceDepartureTime);
+	    train.setDestinationArrivalTime(destinationArrivalTime);
+	    
+	    trainDao.save(train);
+		return "train rescheduled successfully";
+	}
 	
 	
 	

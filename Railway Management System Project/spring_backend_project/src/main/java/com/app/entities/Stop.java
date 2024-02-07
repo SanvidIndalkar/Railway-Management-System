@@ -29,7 +29,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "train")
-public class Stop extends BaseEntity{
+public class Stop extends BaseEntity implements Comparable<Stop>{
 	
 //	done
 	@NotNull
@@ -59,4 +59,9 @@ public class Stop extends BaseEntity{
 	@DateTimeFormat(pattern = "HH:mm:ss")
 	@Column(name = "departure_time")
 	private LocalTime departureTime;
+
+	@Override
+	public int compareTo(Stop other) {
+		return Integer.compare(this.sequence, other.sequence);
+	}
 }

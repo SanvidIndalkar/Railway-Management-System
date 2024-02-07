@@ -20,5 +20,7 @@ public interface TrainDao extends JpaRepository<Train, Long>{
 
 	List<Train> findByAdmin(Admin admin);
 
+	List<Train> findBySourceDepartureDate(LocalDate journeyDate);
+
 	
 }
