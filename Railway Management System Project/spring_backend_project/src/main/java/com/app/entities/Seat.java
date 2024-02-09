@@ -27,9 +27,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Seat extends BaseEntity{
 	
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "class_id")
-	@NotNull
 	private TrainClasses trainClass;
 	
 	@NotNull

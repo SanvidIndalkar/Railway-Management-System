@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.app.dao.AdminDao;
 import com.app.dao.SeatAvailabiltyDao;
+import com.app.dao.SeatDao;
 import com.app.dao.StationDao;
 import com.app.dao.TrainClassesDao;
 import com.app.dao.TrainDao;
@@ -54,16 +55,19 @@ public class TrainServiceImpl implements TrainService{
 	@Autowired
 	private TrainClassesDao trainClassesDao;
 	
+	@Autowired
+	private SeatDao seatDao;
+	
 	@Override
 	public Train addTrain(TrainDTO trainDTO) {
 		
 		Train train = mapper.map(trainDTO, Train.class);
 
-		    // Fetching stopDTO of TrainDTO
-		List<StopDTO> stopsDTO = trainDTO.getStops();
+	    // Fetching stopDTO of TrainDTO
+	    List<StopDTO> stopsDTO = trainDTO.getStops();
 	    List<Stop> stops = new ArrayList<>();
 
-		    // Converting each StopDTO into Stop
+	    // Converting each StopDTO into Stop
 	    for (StopDTO stopDTO : stopsDTO) {
 	        Stop stop = mapper.map(stopDTO, Stop.class);
 
@@ -76,49 +80,51 @@ public class TrainServiceImpl implements TrainService{
 	    }
 	    train.setStops(stops);
 
-		    // Fetching TrainClassesDTO from TrainDTO
+	    // Fetching TrainClassesDTO from TrainDTO
 	    List<TrainClassesDTO> trainClassesDTOs = trainDTO.getTrainClasses();
-	    List<TrainClasses> trainClasses = new ArrayList<>();
+	    List<TrainClasses> trainClasses = new ArrayList<TrainClasses>();
+	    List<Seat> allSeats = new ArrayList<>();
 
-		List<Seat> allSeats = new ArrayList<>();
 
 	    for (TrainClassesDTO trainClassesDTO : trainClassesDTOs) {
-	    	TrainClasses trainClass = mapper.map(trainClassesDTO, TrainClasses.class);
-		    trainClass.setTrain(train);
+	        TrainClasses trainClass = mapper.map(trainClassesDTO, TrainClasses.class);
+	        trainClass.setTrain(train);
 
-		    List<Seat> seats = new ArrayList<>();
-		    int totalSeats = trainClassesDTO.getTotalSeats();
+	        List<Seat> seats = new ArrayList<>();
+	        int totalSeats = trainClassesDTO.getTotalSeats();
 
-		    for (int i = 1; i <= totalSeats; i++) {
-		    	Seat seat = new Seat();
-		    	seat.setSeatNumber(i);
-		    	seat.setTrainClass(trainClass);
-		    	allSeats.add(seat);
-		    	seats.add(seat);
-		        	}
-		    trainClass.setSeats(seats);
-		    trainClasses.add(trainClass);
+	        for (int i = 1; i <= totalSeats; i++) {
+	            Seat seat = new Seat();
+	            seat.setSeatNumber(i);
+	            seat.setTrainClass(trainClass);
+	            seats.add(seat);
+	            allSeats.add(seat);
+	        }
+	        trainClass.setSeats(seats);
+	        trainClasses.add(trainClass);
 	    }
 	    train.setTrainClasses(trainClasses);
-	    
+
 	    Train savedTrain = trainDao.save(train);
 
-	    // Persist TrainClasses entities first
-	    for (TrainClasses trainClass : trainClasses) {
-	    	trainClass.setTrain(savedTrain); // Set the Train reference
-	    	trainClassesDao.save(trainClass); // Persist TrainClasses
-	    }
-
-	    // Then, save Seat entities
-	    for (Seat seat : allSeats) {
-	    	for (Stop stop : savedTrain.getStops()) {
-	    		// Create SeatAvailability instances and associate with Stops
-	    		SeatAvailability seatAvail = new SeatAvailability(seat, stop);
-	    		seatAvailabilityDao.save(seatAvail);
+	    savedTrain.getTrainClasses().size();
+	    savedTrain.getStops().size();
+	    
+	    
+	    System.out.println("Saved Train : " + savedTrain);
+	    // Finally, save SeatAvailability entities
+	    for(TrainClasses classes : savedTrain.getTrainClasses()) {
+	    	classes.getSeats().size();
+	    	List<Seat> allPersistSeats = classes.getSeats();
+	    	for (Seat seat : allPersistSeats) {
+	    		for (Stop stop : savedTrain.getStops()) {
+	    			// Create SeatAvailability instances and associate with Stops
+	    			SeatAvailability seatAvail = new SeatAvailability(seat, stop);
+	    			seatAvailabilityDao.save(seatAvail);
+	    		}
 	    	}
 	    }
-
-	    return savedTrain;
+	    return train;
 	}
 
 	

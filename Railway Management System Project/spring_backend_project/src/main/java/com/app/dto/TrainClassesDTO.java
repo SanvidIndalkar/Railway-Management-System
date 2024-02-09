@@ -26,5 +26,4 @@ public class TrainClassesDTO {
 	@JsonIgnore
 	private TrainDTO train;
     private Integer totalSeats;
-    private Integer totalSeatsAvailable;
 }
