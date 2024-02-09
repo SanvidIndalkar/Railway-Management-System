@@ -40,18 +40,16 @@ public class TrainClasses extends BaseEntity{
 	private Classes name;
 	
 //	done
+
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "train_id")
 	private Train train;
 	
+//	done
 	@NotNull
 	@Column(name = "total_seats")
 	private Integer totalSeats;
-	
-	@NotNull
-	@Column(name = "total_seats_available")
-	private Integer totalSeatsAvailable;
 	
 //	done
 	@OneToMany(mappedBy = "trainClass",fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
