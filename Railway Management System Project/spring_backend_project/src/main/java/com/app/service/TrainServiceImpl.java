@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,7 @@ import com.app.entities.Station;
 import com.app.entities.Stop;
 import com.app.entities.Train;
 import com.app.entities.TrainClasses;
+import com.app.enums.TrainStatus;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
@@ -256,7 +258,8 @@ public class TrainServiceImpl implements TrainService{
 	public List<TrainDTO> findTrainsByTwoStopsInSequence(TrainSrcDestDateDTO searchInfo) {
 		
 		List<TrainDTO> matchingTrains = new ArrayList<TrainDTO>();
-		List<Train> trainsByDate = trainDao.findBySourceDepartureDate(searchInfo.getJourneyDate());
+		List<Train> trainsByDate = trainDao.findBySourceDepartureDateAndTrainStatus(searchInfo.getJourneyDate(), TrainStatus.PENDING);
+
 		System.out.println("Trains : " + trainsByDate.size());
 		
 		for(Train trainByDate : trainsByDate) {
@@ -419,5 +422,43 @@ public class TrainServiceImpl implements TrainService{
 	    
 		return "train rescheduled successfully";
 	}	
+	
+	
+	// Runs every 60 seconds to update Train Status
+	@Scheduled(fixedDelay = 60000)
+    public void updateTrainStatus() {
+        List<Train> trains = trainDao.findAll();
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+
+        for (Train train : trains) {
+            if (train.getTrainStatus() == TrainStatus.CANCELLED || train.getTrainStatus() == TrainStatus.COMPLETED) {
+                continue; // Skip updating status if already cancelled or completed
+            }
+
+            TrainStatus status = calculateTrainStatus(train, currentDate, currentTime);
+            train.setTrainStatus(status);
+            trainDao.save(train);
+        }
+    }
+
+
+	private TrainStatus calculateTrainStatus(Train train, LocalDate currentDate, LocalTime currentTime) {
+		
+		 // Logic to determine the train status based on current date and time
+        LocalDate sourceDate = train.getSourceDepartureDate();
+        LocalTime sourceTime = train.getSourceDepartureTime();
+        LocalDate destinationDate = train.getDestinationArrivalDate();
+        LocalTime destinationTime = train.getDestinationArrivalTime();
+
+        if (currentDate.isBefore(sourceDate) || (currentDate.equals(sourceDate) && currentTime.isBefore(sourceTime))) {
+            return TrainStatus.PENDING;
+        } else if ((currentDate.isEqual(sourceDate) && currentTime.isAfter(sourceTime)) &&
+                   (currentDate.isBefore(destinationDate) || (currentDate.isEqual(destinationDate) && currentTime.isBefore(destinationTime)))) {
+            return TrainStatus.RUNNING;
+        } else {
+            return TrainStatus.COMPLETED;
+        }
+	}
 	
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.app.entities.Admin;
 import com.app.entities.Station;
+import com.app.enums.TrainStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,4 +30,5 @@ public class TrainOnlyDTO {
     private LocalTime sourceDepartureTime;
     private LocalTime destinationArrivalTime;
     private Integer totalStops;
+    private TrainStatus trainStatus;
 }
