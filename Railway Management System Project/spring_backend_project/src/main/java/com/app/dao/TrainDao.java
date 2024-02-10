@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.app.entities.Admin;
 import com.app.entities.Station;
 import com.app.entities.Train;
+import com.app.enums.TrainStatus;
 
 public interface TrainDao extends JpaRepository<Train, Long>{
 
@@ -20,7 +21,7 @@ public interface TrainDao extends JpaRepository<Train, Long>{
 
 	List<Train> findByAdmin(Admin admin);
 
-	List<Train> findBySourceDepartureDate(LocalDate journeyDate);
+	List<Train> findBySourceDepartureDateAndTrainStatus(LocalDate sourceDepartureDate, TrainStatus trainStatus);
 
 	Train findFirstByTrainNumberOrderBySourceDepartureDateDesc(Long trainNumber);
 

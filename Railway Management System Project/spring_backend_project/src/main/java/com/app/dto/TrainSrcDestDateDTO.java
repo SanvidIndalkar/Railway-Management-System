@@ -22,4 +22,5 @@ public class TrainSrcDestDateDTO {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate journeyDate;
 	
+	
 }
