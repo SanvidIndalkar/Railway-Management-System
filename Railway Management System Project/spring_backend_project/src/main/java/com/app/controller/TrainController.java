@@ -38,7 +38,7 @@ public class TrainController {
 	@PostMapping("/add")
 	public String addTrain(@RequestBody TrainDTO trainDTO) {
 		
-		Train train = trainService.addTrain(trainDTO);
+		Train train = trainService.addNewTrain(trainDTO);
 		if(train == null) return "Failed";
 		return "Success";
 	}
@@ -89,11 +89,11 @@ public class TrainController {
 	
 	//for admin
 	//done
-	//reschedule a train by Train Id
-	@PutMapping("/reschedule/{trainId}")
-	public String rescheduleTrain(@PathVariable Long trainId, @RequestBody TrainRescheduleDTO trainRescheduleDTO) {
-		trainRescheduleDTO.setId(trainId);
-		String message = trainService.reschuduleTrain(trainRescheduleDTO);
+	//reschedule a train by Train Number
+	@PutMapping("/reschedule")
+	public String rescheduleTrain(@RequestBody TrainRescheduleDTO trainRescheduleDTO) {
+
+		String message = trainService.rescheduleTrain(trainRescheduleDTO);
 		return message;
 	}
 	

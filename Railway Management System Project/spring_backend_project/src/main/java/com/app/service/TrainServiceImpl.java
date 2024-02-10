@@ -1,7 +1,9 @@
 package com.app.service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +11,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.app.custom_exceptions.ResourceNotFoundException;
 import com.app.dao.AdminDao;
 import com.app.dao.SeatAvailabiltyDao;
 import com.app.dao.SeatDao;
@@ -32,6 +36,8 @@ import com.app.entities.Station;
 import com.app.entities.Stop;
 import com.app.entities.Train;
 import com.app.entities.TrainClasses;
+
+import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
 @Service
 @Transactional
@@ -57,6 +63,20 @@ public class TrainServiceImpl implements TrainService{
 	
 	@Autowired
 	private SeatDao seatDao;
+	
+	@Override
+	public Train addNewTrain(TrainDTO trainDTO) {
+		
+		//1) Check if train with same train number exists
+		Train train = trainDao.findByTrainNumber(trainDTO.getTrainNumber());
+		
+		//2) If true then throw error
+		if(train != null) throw new ResourceNotFoundException("Train with given train number already exists!");
+		
+		//3) Else call addTrain
+		return addTrain(trainDTO);
+	}
+	
 	
 	@Override
 	public Train addTrain(TrainDTO trainDTO) {
@@ -216,7 +236,6 @@ public class TrainServiceImpl implements TrainService{
 	     return null;
 	}
 
-
 	
 	@Override
 	public List<TrainOnlyDTO> getAllTrainsByAdmin(Long adminId) {
@@ -231,7 +250,6 @@ public class TrainServiceImpl implements TrainService{
 		}
 		return null;
 	}
-
 
 
 	@Override
@@ -300,23 +318,106 @@ public class TrainServiceImpl implements TrainService{
 
 
 	@Override
-	public String reschuduleTrain(TrainRescheduleDTO trainRescheduleDTO) {
-		LocalDate sourceDepartureDate = trainRescheduleDTO.getSourceDepartureDate();
-	    LocalDate destinationArrivalDate = trainRescheduleDTO.getDestinationArrivalDate();
-	    LocalTime sourceDepartureTime = trainRescheduleDTO.getSourceDepartureTime(); 
-	    LocalTime destinationArrivalTime = trainRescheduleDTO.getDestinationArrivalTime();
+	public String rescheduleTrain(TrainRescheduleDTO trainRescheduleDTO) {
+		
+		//1) Get All Trains By Train Number(Maybe orderby query) 
+		//2) Get the latest scheduled train
+		Long trainNumber = trainRescheduleDTO.getTrainNumber();
+		Train lastScheduledTrain = trainDao.findFirstByTrainNumberOrderBySourceDepartureDateDesc(trainNumber);
+		if(lastScheduledTrain == null) throw new ResourceNotFoundException("No train with given train Number to Reschedule");
+		
+		//3) Check if the date of the train to be rescheduled is atleast
+		//   2 days after latest scheduled train's journey ending
+		Period difference = Period.between(lastScheduledTrain.getSourceDepartureDate(), trainRescheduleDTO.getSourceDepartureDate());
+
+		// Get the total number of days in the difference
+		long daysDifference = difference.getDays();
+
+		// Check if the difference is at least 2 days
+		boolean okToReschedule = daysDifference >= 2;
+		
+	    //4) Else Throw Error
+	    if(!okToReschedule) throw new RuntimeException("Train Needs to have gap of 2 days before rescheduling");
+		
+	    //5) If OK create train and set dto value into train
+	    Train transientTrain = new Train();
+	    List<Stop> transientStops = new ArrayList<Stop>();
+	    List<TrainClasses> transientTrainClasses = new ArrayList<TrainClasses>();
 	    
-	    Train train = trainDao.findById(trainRescheduleDTO.getId()).orElseThrow();
-	    train.setSourceDepartureDate(sourceDepartureDate);
-	    train.setDestinationArrivalDate(destinationArrivalDate);
-	    train.setSourceDepartureTime(sourceDepartureTime);
-	    train.setDestinationArrivalTime(destinationArrivalTime);
+	    //6) Copy all data from lastScheduleTrain to transientTrain except ID stops and seats
+	    BeanUtils.copyProperties(lastScheduledTrain, transientTrain, "id");
+	    transientTrain.setDestinationArrivalDate(trainRescheduleDTO.getDestinationArrivalDate());
+	    transientTrain.setSourceDepartureDate(trainRescheduleDTO.getSourceDepartureDate());
 	    
-	    trainDao.save(train);
+	    //7) Initializing stops and train classes
+	    lastScheduledTrain.getStops().size();
+	    lastScheduledTrain.getTrainClasses().size();
+	    
+	    List<Stop> lastScheduledTrainStops = lastScheduledTrain.getStops();
+	    List<TrainClasses> lastScheduledTrainClasses = lastScheduledTrain.getTrainClasses();
+	    
+	    //8) Copying stops into transient train's stop 
+	    
+	    for(Stop stop : lastScheduledTrainStops) {
+	    	Stop transientStop = new Stop();
+	    	transientStop.setArrivalDate(stop.getArrivalDate());
+	    	transientStop.setArrivalTime(stop.getArrivalTime());
+	    	transientStop.setDepartureTime(stop.getDepartureTime());
+	    	transientStop.setSequence(stop.getSequence());
+	    	transientStop.setStation(stop.getStation());
+	    	transientStop.setTrain(transientTrain);
+	    	transientStops.add(transientStop);
+	    }
+	    
+	    //9) Copying train classes into transient train's classes
+	    List<Seat> allSeats = new ArrayList<Seat>();
+	    for(TrainClasses trainClass : lastScheduledTrainClasses) {
+	    	TrainClasses transientTrainClass = new TrainClasses();
+	    	transientTrainClass.setName(trainClass.getName());
+	    	transientTrainClass.setTotalSeats(trainClass.getTotalSeats());
+	    	transientTrainClass.setTrain(transientTrain);
+	    	List<Seat> seats = new ArrayList<>();
+	        int totalSeats = trainClass.getTotalSeats();
+
+	        for (int i = 1; i <= totalSeats; i++) {
+	            Seat seat = new Seat();
+	            seat.setSeatNumber(i);
+	            seat.setTrainClass(transientTrainClass);
+	            seats.add(seat);
+				allSeats.add(seat);
+	        }
+	        transientTrainClass.setSeats(seats);
+	        transientTrainClasses.add(transientTrainClass);
+	    }
+	    
+	    //10) set transient train classes and stops
+	    transientTrain.setStops(transientStops);
+	    transientTrain.setTrainClasses(transientTrainClasses);
+	    
+	    Train savedTrain = trainDao.save(transientTrain);
+	    
+	    //11) creating seat availability for saved train
+	    
+	    savedTrain.getTrainClasses().size();
+	    savedTrain.getStops().size();
+	    
+	    
+	    System.out.println("Saved Train : " + savedTrain);
+	    // Finally, save SeatAvailability entities
+	    for(TrainClasses classes : savedTrain.getTrainClasses()) {
+	    	classes.getSeats().size();
+	    	List<Seat> allPersistSeats = classes.getSeats();
+	    	for (Seat seat : allPersistSeats) {
+	    		for (Stop stop : savedTrain.getStops()) {
+	    			// Create SeatAvailability instances and associate with Stops
+	    			SeatAvailability seatAvail = new SeatAvailability(seat, stop);
+	    			seatAvailabilityDao.save(seatAvail);
+	    		}
+	    	}
+	    }
+	    
+	    
 		return "train rescheduled successfully";
-	}
-	
-	
-	
+	}	
 	
 }

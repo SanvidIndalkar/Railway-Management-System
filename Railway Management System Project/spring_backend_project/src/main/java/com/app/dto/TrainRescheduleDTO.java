@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.app.entities.Admin;
 import com.app.entities.Station;
 
@@ -21,13 +23,13 @@ import lombok.ToString;
 @ToString
 public class TrainRescheduleDTO {
 	
-	private Long id;
 	private Long trainNumber;
     private String trainName;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate sourceDepartureDate;
+    
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate destinationArrivalDate;
-    private LocalTime sourceDepartureTime;
-    private LocalTime destinationArrivalTime;
 
 }
