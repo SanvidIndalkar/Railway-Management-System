@@ -22,5 +22,7 @@ public interface TrainDao extends JpaRepository<Train, Long>{
 
 	List<Train> findBySourceDepartureDate(LocalDate journeyDate);
 
+	Train findFirstByTrainNumberOrderBySourceDepartureDateDesc(Long trainNumber);
+
 	
 }

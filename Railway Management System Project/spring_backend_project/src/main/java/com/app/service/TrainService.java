@@ -10,6 +10,8 @@ import com.app.entities.Train;
 
 public interface TrainService {
 	
+	Train addNewTrain(TrainDTO trainDTO);
+	
 	Train addTrain(TrainDTO trainDTO);
 
 	TrainOnlyDTO findTrainByNumber(Long trainNumber);
@@ -26,5 +28,5 @@ public interface TrainService {
 
 	List<TrainDTO> findTrainsByTwoStopsInSequence(TrainSrcDestDateDTO searchInfo);
 
-	String reschuduleTrain(TrainRescheduleDTO trainRescheduleDTO);
+	String rescheduleTrain(TrainRescheduleDTO trainRescheduleDTO);
 }

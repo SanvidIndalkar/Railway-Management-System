@@ -8,6 +8,7 @@ import com.app.entities.Admin;
 import com.app.entities.Station;
 import com.app.entities.Stop;
 import com.app.entities.TrainClasses;
+import com.app.enums.TrainStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -34,6 +35,8 @@ public class TrainDTO {
     private LocalTime sourceDepartureTime;
     private LocalTime destinationArrivalTime;
     private Integer totalStops;
+    //to do
+    private TrainStatus trainStatus = TrainStatus.PENDING;
     private List<StopDTO> stops;
     private List<TrainClassesDTO> trainClasses;
 

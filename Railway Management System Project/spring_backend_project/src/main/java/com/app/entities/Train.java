@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,6 +21,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.app.enums.TrainStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +41,7 @@ import lombok.Setter;
 public class Train extends BaseEntity{
 
 	@NotNull
-	@Column(name = "train_number", unique = true, nullable = false)
+	@Column(name = "train_number", nullable = false)
 	private Long trainNumber;
 	
 	@NotBlank
@@ -83,6 +87,12 @@ public class Train extends BaseEntity{
     @NotNull
     @Column(name = "total_stops",nullable = false)
     private Integer totalStops;
+    
+    //to do
+    @Enumerated(EnumType.STRING)
+    @Column(name = "train_status",nullable = false)
+    private TrainStatus trainStatus = TrainStatus.PENDING; 
+    
     
 //  done
     @OneToMany(mappedBy = "train",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
