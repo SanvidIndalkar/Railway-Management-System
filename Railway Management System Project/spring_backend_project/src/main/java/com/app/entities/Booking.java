@@ -7,6 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -30,6 +32,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Booking extends BaseEntity{
 
+	
+//	done
+	@Column(name = "pnr", nullable = false, unique = true)
+	private Long pnr;
+	
+	
 //	done
 	@ManyToOne
 	@NotNull

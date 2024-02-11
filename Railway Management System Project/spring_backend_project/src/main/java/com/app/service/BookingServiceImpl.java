@@ -3,6 +3,7 @@ package com.app.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.app.custom_exceptions.ResourceNotFoundException;
 import com.app.dao.BookingDao;
+import com.app.dao.PassengerDao;
 import com.app.dao.SeatAvailabiltyDao;
 import com.app.dao.SeatDao;
 import com.app.dao.TrainClassesDao;
@@ -55,6 +58,10 @@ public class BookingServiceImpl implements BookingService{
 	
 	@Autowired
 	private TrainClassesDao trainClassesDao;
+	
+	@Autowired
+	private PassengerDao passengerDao;
+	
 	
 	//pending
 	@Override
@@ -129,7 +136,7 @@ public class BookingServiceImpl implements BookingService{
 		
 		//8) Make the seat Availability as false and save update 
 		//book seats
-		List<Seat> bookedSeats = bookSeats(totalPassengers,availableSeats,stops,sourceStopIndex,destinationStopIndex);
+		List<Seat> bookedSeats = bookSeats(totalPassengers,availableSeats,stops,sourceStopIndex,destinationStopIndex-1);
 		if(bookedSeats.size() != totalPassengers) return "something went wrong while booking seats";
 		
 		//9) set passengers in to booking and set all booking fields
@@ -152,7 +159,10 @@ public class BookingServiceImpl implements BookingService{
 		}
 				
 		booking.setPassengers(passengers);
-		
+		//setting PNR
+		Long latestPnr = bookingDao.findMaxPnr();
+		Long nextPnr = (latestPnr != null) ? latestPnr + 1 : 70000L;
+		booking.setPnr(nextPnr);
 		//10) save booking
 		Booking bookingSaved = bookingDao.save(booking);
 		if(bookingSaved == null) return "booking unsuccessfull";
@@ -212,6 +222,20 @@ public class BookingServiceImpl implements BookingService{
 			if(seatAvailable) availableSeats.add(seat);
 		}
 		return availableSeats;
+	}
+
+	@Override
+	public List<PassengerDTO> bookingDetailsOfTrain(Long trainId) {
+		
+//		1) Find train with given Id
+		Train train = trainDao.findById(trainId).orElseThrow(() -> new ResourceNotFoundException("Train Not Found!"));
+		
+//		2) Find all passengers travelling by same train
+		List<Passenger> passengers = passengerDao.findByTrain(train);
+		
+		List<PassengerDTO> passengersDto = passengers.stream().map((passenger) -> mapper.map(passenger, PassengerDTO.class)).collect(Collectors.toList());
+
+		return passengersDto;
 	}
 
 }

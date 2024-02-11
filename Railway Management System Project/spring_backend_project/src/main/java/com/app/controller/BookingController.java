@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.BookingDetailsPnrDTO;
 import com.app.dto.BookingPassengersDTO;
+import com.app.dto.PassengerDTO;
 import com.app.entities.Passenger;
 import com.app.service.BookingService;
 
@@ -22,7 +24,7 @@ public class BookingController {
 	private BookingService bookingService;
 	
 	//for user
-	//pending
+	//done
 	//book a train by sending list of passengers Details and trainID class
 	@PostMapping("/passengers/{trainId}")
 	public String bookTrainWithPassengers(@PathVariable Long trainId, @RequestBody BookingPassengersDTO bookingDTO){
@@ -32,10 +34,25 @@ public class BookingController {
 		return message;
 	}
 	
+	//for admin
+	//pending
 	//getting booking details of a particular train
+	@GetMapping("/booking/{trainId}")
+	public List<PassengerDTO> bookingDetailsOfTrain(@PathVariable Long trainId) {
+		
+		List<PassengerDTO> passengers = bookingService.bookingDetailsOfTrain(trainId);
+		return passengers;
+	}
 	
 	
-	//getting all passengers of a particular booking id
+	//for admin and user
+	//pending
+	//getting all passengers of a particular booking pnr
+	@GetMapping("/booking/{pnr}")
+	public List<BookingDetailsPnrDTO> passengerDetailsOfPNR(){
+		return null;
+	}
+	
 	
 	
 }
