@@ -50,8 +50,8 @@ public class BookingController {
 	//pending
 	//getting all passengers of a particular booking pnr
 	@GetMapping("/booking/{pnr}")
-	public List<BookingDetailsPnrDTO> passengerDetailsOfPNR(){
-		return null;
+	public List<BookingDetailsPnrDTO> passengerDetailsOfPNR(@PathVariable Long pnr){
+		return bookingService.bookingDetailsByPnr(pnr);
 	}
 
 
