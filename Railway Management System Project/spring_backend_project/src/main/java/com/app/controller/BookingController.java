@@ -20,6 +20,7 @@ import com.app.service.BookingService;
 @RequestMapping("/booking")
 public class BookingController {
 
+
 	@Autowired 
 	private BookingService bookingService;
 	
@@ -52,7 +53,6 @@ public class BookingController {
 	public List<BookingDetailsPnrDTO> passengerDetailsOfPNR(){
 		return null;
 	}
-	
-	
-	
+
+
 }

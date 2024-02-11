@@ -9,6 +9,5 @@ public interface BookingDao extends JpaRepository<Booking, Long>{
 
 	@Query("SELECT MAX(b.pnr) FROM Booking b")
 	Long findMaxPnr();
-
 	
 }
