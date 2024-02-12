@@ -18,6 +18,9 @@ public class UserController {
 	
 	@PostMapping("/register")
 	public String registerUser(@RequestBody User user) {
+		
+		//email verification OTP
+		
 		User userFound = userService.findByEmail(user);
 		if(userFound == null) {
 			userService.addUser(user);
