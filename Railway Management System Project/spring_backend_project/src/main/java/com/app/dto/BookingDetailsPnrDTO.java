@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.app.dto;
 
@@ -28,20 +28,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDetailsPnrDTO {
-	
+
 	private String firstName;
 	private String lastName;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
-	
+
 	private StationDTO source;
-	
+
 	private StationDTO destination;
-	
-	@Enumerated(EnumType.STRING)
-	private Classes trainClass;
-	
+
 	private SeatDTO seat;
-	
+
 }
