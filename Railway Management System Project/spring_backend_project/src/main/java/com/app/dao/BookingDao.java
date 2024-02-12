@@ -5,9 +5,11 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.app.entities.Booking;
 
-public interface BookingDao extends JpaRepository<Booking, Long>{
+public interface BookingDao extends JpaRepository<Booking, Long> {
 
 	@Query("SELECT MAX(b.pnr) FROM Booking b")
 	Long findMaxPnr();
-	
+
+	Booking findByPnr(Long pnr);
+
 }
