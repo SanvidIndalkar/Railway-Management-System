@@ -9,5 +9,8 @@ import com.app.entities.Train;
 
 public interface PassengerDao extends JpaRepository<Passenger, Long>{
 
-List<Passenger> findByTrain(Train train);
+
+	List<Passenger> findByTrain(Train train);
+
+
 }
