@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 //done
 
 @Entity
@@ -30,45 +29,43 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Booking extends BaseEntity{
-
-
-// done
-@Column(name = "pnr", nullable = false, unique = true)
-private Long pnr;
-
+public class Booking extends BaseEntity {
 
 // done
-@ManyToOne
-@NotNull
-@JoinColumn(name = "user_id")
-private User user;
+	@Column(name = "pnr", nullable = false, unique = true)
+	private Long pnr;
 
 // done
-@ManyToOne
-@JoinColumn(name = "train_id")
-@NotNull
-private Train train;
+	@ManyToOne
+	@NotNull
+	@JoinColumn(name = "user_id")
+	private User user;
 
 // done
-@ManyToOne
-@JoinColumn(name = "source_station_id")
-@NotNull
-private Station source;
+	@ManyToOne
+	@JoinColumn(name = "train_id")
+	@NotNull
+	private Train train;
 
 // done
-@ManyToOne
-@JoinColumn(name = "destination_station_id")
-@NotNull
-private Station destination;
+	@ManyToOne
+	@JoinColumn(name = "source_station_id")
+	@NotNull
+	private Station source;
 
 // done
-@Column(name = "total_passengers")
-@NotNull
-private Integer totalPassengers;
+	@ManyToOne
+	@JoinColumn(name = "destination_station_id")
+	@NotNull
+	private Station destination;
 
 // done
-@OneToMany(mappedBy = "booking",fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
-private List<Passenger> passengers;
+	@Column(name = "total_passengers")
+	@NotNull
+	private Integer totalPassengers;
+
+// done
+	@OneToMany(mappedBy = "booking", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Passenger> passengers;
 
 }
