@@ -1,6 +1,6 @@
 package com.app.service;
 
-
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,11 +11,11 @@ import com.app.entities.User;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Override
 	public User addUser(User user) {
 		return userDao.save(user);
@@ -31,6 +31,11 @@ public class UserServiceImpl implements UserService{
 		return userDao.findByEmail(user.getEmail());
 	}
 
-	
-	
+// Method to generate a random OTP
+	private String generateOTP() {
+
+// For simplicity, using a static OTP
+		return "123456";
+	}
+
 }
