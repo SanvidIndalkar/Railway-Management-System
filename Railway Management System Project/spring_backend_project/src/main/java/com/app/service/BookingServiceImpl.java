@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import com.app.dao.UserDao;
 import com.app.dto.BookingDetailsPnrDTO;
 import com.app.dto.BookingPassengersDTO;
 import com.app.dto.PassengerDTO;
+import com.app.dto.SeatDTO;
 import com.app.dto.StationDTO;
 import com.app.entities.Booking;
 import com.app.entities.Passenger;
@@ -34,6 +38,7 @@ import com.app.entities.Train;
 import com.app.entities.TrainClasses;
 import com.app.entities.User;
 import com.app.enums.Classes;
+import com.app.enums.Gender;
 
 @Service
 @Transactional
@@ -256,8 +261,37 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public List<BookingDetailsPnrDTO> bookingDetailsByPnr(Long pnr) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
+// 1) get booking by pnr
+		Booking booking = bookingDao.findByPnr(pnr);
+
+// 2) find passenger by booking
+		List<Passenger> passengers = passengerDao.findByBooking(booking);
+
+// 3) fill booking details pnr dto correctly
+		List<BookingDetailsPnrDTO> bookingDetailsList = new ArrayList<>();
+		for (Passenger passenger : passengers) {
+			BookingDetailsPnrDTO bookingDetails = new BookingDetailsPnrDTO();
+
+			// Mapping passenger details to DTO
+			bookingDetails.setFirstName(passenger.getFirstName());
+			bookingDetails.setLastName(passenger.getLastName());
+			bookingDetails.setGender(passenger.getGender());
+
+			// Assuming source and destination can be obtained from the Train entity
+			// associated with the booking
+			bookingDetails.setSource(mapper.map(passenger.getTrain().getSource(), StationDTO.class));
+			bookingDetails.setDestination(mapper.map(passenger.getTrain().getDestination(), StationDTO.class));
+
+			// Mapping seat details to DTO
+			SeatDTO seatDTO = new SeatDTO();
+			seatDTO.setTrainClass(passenger.getSeat().getTrainClass());
+			seatDTO.setSeatNumber(passenger.getSeat().getSeatNumber());
+			bookingDetails.setSeat(seatDTO);
+
+			// Adding booking details to the list
+			bookingDetailsList.add(bookingDetails);
+		}
+		return bookingDetailsList;
+	}
 }
