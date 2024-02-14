@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.entities.User;
+import com.app.enums.UserRole;
 import com.app.service.TesingEmailService;
 import com.app.service.UserService;
 import com.app.utils.Pair;
@@ -86,7 +87,7 @@ public class UserController {
 
 	@PostMapping("/login")
 	public String login(@RequestBody User user) {
-		User userFound = userService.findByEmailAndPassword(user);
+		User userFound = userService.findByEmailAndPasswordAndRole(user, UserRole.ROLE_USER);
 		if (userFound == null)
 			return "No User";
 		return "User found";
