@@ -20,39 +20,36 @@ import com.app.service.BookingService;
 @RequestMapping("/booking")
 public class BookingController {
 
-
-	@Autowired 
+	@Autowired
 	private BookingService bookingService;
-	
-	//for user
-	//done
-	//book a train by sending list of passengers Details and trainID class
+
+//for user
+//done
+//book a train by sending list of passengers Details and trainID class
 	@PostMapping("/passengers/{trainId}")
-	public String bookTrainWithPassengers(@PathVariable Long trainId, @RequestBody BookingPassengersDTO bookingDTO){
-		
+	public String bookTrainWithPassengers(@PathVariable Long trainId, @RequestBody BookingPassengersDTO bookingDTO) {
+
 		String message = bookingService.bookTrain(trainId, bookingDTO);
-		
+
 		return message;
 	}
-	
-	//for admin
-	//pending
-	//getting booking details of a particular train
-	@GetMapping("/booking/{trainId}")
+
+//for admin
+//pending
+//getting booking details of a particular train
+	@GetMapping("/bookings/{trainId}")
 	public List<PassengerDTO> bookingDetailsOfTrain(@PathVariable Long trainId) {
-		
+
 		List<PassengerDTO> passengers = bookingService.bookingDetailsOfTrain(trainId);
 		return passengers;
 	}
-	
-	
-	//for admin and user
-	//pending
-	//getting all passengers of a particular booking pnr
+
+//for admin and user
+//pending
+//getting all passengers of a particular booking pnr
 	@GetMapping("/booking/{pnr}")
-	public List<BookingDetailsPnrDTO> passengerDetailsOfPNR(@PathVariable Long pnr){
+	public List<BookingDetailsPnrDTO> passengerDetailsOfPNR(@PathVariable Long pnr) {
 		return bookingService.bookingDetailsByPnr(pnr);
 	}
-
 
 }
