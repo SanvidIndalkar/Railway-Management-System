@@ -38,7 +38,7 @@ public class BookingController {
 	//for admin
 	//pending
 	//getting booking details of a particular train
-	@GetMapping("/booking/{trainId}")
+	@GetMapping("/bookings/{trainId}")
 	public List<PassengerDTO> bookingDetailsOfTrain(@PathVariable Long trainId) {
 		
 		List<PassengerDTO> passengers = bookingService.bookingDetailsOfTrain(trainId);
