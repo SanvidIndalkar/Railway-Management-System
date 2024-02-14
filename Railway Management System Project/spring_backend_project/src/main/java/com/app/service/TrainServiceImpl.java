@@ -30,13 +30,13 @@ import com.app.dto.TrainDTO;
 import com.app.dto.TrainOnlyDTO;
 import com.app.dto.TrainRescheduleDTO;
 import com.app.dto.TrainSrcDestDateDTO;
-import com.app.entities.Admin;
 import com.app.entities.Seat;
 import com.app.entities.SeatAvailability;
 import com.app.entities.Station;
 import com.app.entities.Stop;
 import com.app.entities.Train;
 import com.app.entities.TrainClasses;
+import com.app.entities.User;
 import com.app.enums.TrainStatus;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
@@ -232,9 +232,9 @@ public class TrainServiceImpl implements TrainService {
 	@Override
 	public List<TrainOnlyDTO> getAllTrainsByAdmin(Long adminId) {
 
-		Optional<Admin> adminOptional = adminDao.findById(adminId);
+		Optional<User> adminOptional = adminDao.findById(adminId);
 		if (adminOptional.isPresent()) {
-			Admin admin = adminOptional.get();
+			User admin = adminOptional.get();
 			List<Train> trains = trainDao.findByAdmin(admin);
 			return trains.stream().map((train) -> mapper.map(train, TrainOnlyDTO.class)).collect(Collectors.toList());
 		}

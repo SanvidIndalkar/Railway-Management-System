@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.app.dao.AdminDao;
 import com.app.dao.TrainDao;
-import com.app.entities.Admin;
 import com.app.entities.Train;
+import com.app.entities.User;
 
 @Service
 @Transactional
@@ -19,7 +19,7 @@ public class AdminServiceImpl implements AdminService{
 	private AdminDao adminDao;
 	
 	@Override
-	public Admin findByEmailAndPassword(Admin admin) {	
+	public User findByEmailAndPassword(User admin) {	
 		return adminDao.findByEmailAndPassword(admin.getEmail(), admin.getPassword());
 	}
 

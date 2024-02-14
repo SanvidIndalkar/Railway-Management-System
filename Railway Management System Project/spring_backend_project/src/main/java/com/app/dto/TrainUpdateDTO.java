@@ -4,15 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.app.entities.Admin;
 import com.app.entities.Station;
+import com.app.entities.User;
 
 public class TrainUpdateDTO {
 
 	private Long id;
 	private Long trainNumber;
     private String trainName;
-    private Admin admin;
+    private User admin;
     private Station source;
     private Station destination;
     private LocalDate sourceDepartureDate;

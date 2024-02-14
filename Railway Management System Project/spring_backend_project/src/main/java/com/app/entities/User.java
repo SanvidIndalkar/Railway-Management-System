@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.app.enums.Gender;
+import com.app.enums.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -79,6 +80,10 @@ public class User extends BaseEntity{
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "dob")
     private LocalDate dob;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private UserRole role;
     
 }
 

@@ -52,7 +52,7 @@ public class Train extends BaseEntity{
 	@ManyToOne
 	@NotNull
 	@JoinColumn(name = "admin_id")
-    private Admin admin;
+    private User admin;
     
 //	done
 	@ManyToOne
