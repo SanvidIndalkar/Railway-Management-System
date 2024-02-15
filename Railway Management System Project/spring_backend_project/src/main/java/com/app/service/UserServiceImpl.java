@@ -1,6 +1,7 @@
 package com.app.service;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,11 @@ public class UserServiceImpl implements UserService {
 
 // For simplicity, using a static OTP
 		return "123456";
+	}
+
+	@Override
+	public Optional<User> findByEmail(String email) {
+		return userDao.findByEmail(email);
 	}
 
 }

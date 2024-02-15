@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.app.custom_exceptions.ResourceNotFoundException;
 import com.app.dto.ApiResponse;
+import com.app.dto.CustomResponse;
 
 @RestControllerAdvice // =@ControllerAdvice => global exc handler class
 //--common interceptor to intercept ALL excs in all contoller + @ResponseBody added impl. 
@@ -29,25 +30,27 @@ public class GlobalExceptionHandler {
 				.collect(Collectors.toMap
 						(FieldError::getField, FieldError::getDefaultMessage));
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(map);
+				.body(new CustomResponse<>(true, "Invalid Data Passed!!!!", map));
 	}
 
 	// method level anno to tell SC , following is an exc handling method : to
 	// handle : ResourceNotFoundException
 	@ExceptionHandler(ResourceNotFoundException.class)
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
-	public ApiResponse handleResourceNotFoundException(
+	public ResponseEntity<?> handleResourceNotFoundException(
 			ResourceNotFoundException e) {
 		System.out.println("in res not found " + e);
-		return new ApiResponse(e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.NOT_FOUND)
+				.body(new CustomResponse<>(true, e.getMessage(), null));
 	}
 
 	// method level anno to tell SC , following is an exc handling method : to
 	// handle any other remaining exc => catch all
 	@ExceptionHandler(RuntimeException.class)
-	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-	public ApiResponse handleAnyException(RuntimeException e) {
+	public ResponseEntity<?> handleAnyException(RuntimeException e) {
 		System.out.println("in catch-all " + e);
-		return new ApiResponse(e.getMessage());
+		return ResponseEntity
+				.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(new CustomResponse<>(true, e.getMessage(), null));
 	}
 }

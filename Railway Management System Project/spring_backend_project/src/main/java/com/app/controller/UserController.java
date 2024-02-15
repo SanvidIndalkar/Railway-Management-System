@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.custom_exceptions.ResourceNotFoundException;
 import com.app.dto.CustomResponse;
+import com.app.dto.LogIn;
 import com.app.dto.SigninResponse;
 import com.app.entities.User;
 import com.app.enums.UserRole;
@@ -45,6 +48,9 @@ public class UserController {
 	
 	@Autowired
 	private JwtUtils utils;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@GetMapping("/generateOTP")
 	public ResponseEntity<String> generateOTP(@RequestParam String email) {
@@ -94,6 +100,7 @@ public class UserController {
 						.body(new CustomResponse<>(true, "OTP has expired.", null));
 			}
 			// OTP is valid, add the user
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			userService.addUser(user);
 			// Remove OTP from the map
 			otpMap.remove(email);
@@ -109,19 +116,25 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody User user) {
+	public ResponseEntity<?> login(@RequestBody LogIn user) {
 		try {
 			Authentication verifiedAuth = mgr
 					.authenticate(new UsernamePasswordAuthenticationToken
 							(user.getEmail(), user.getPassword()));
 			
+			User userFound = userService.findByEmail(user.getEmail())
+					.orElseThrow(() -> new ResourceNotFoundException("No Email Found!"));
+			if(userFound.getRole() != UserRole.ROLE_USER) throw new BadCredentialsException("Not a User!");
+			
 			return ResponseEntity
 					.ok(new SigninResponse(utils.generateJwtToken(verifiedAuth), "Successful Authentication!!!"));
 
 		} catch (BadCredentialsException e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new CustomResponse<>(true, e.getMessage(), null));
 		} catch (Exception e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new CustomResponse<>(true, e.getMessage(), null));
 		}
 	}
 

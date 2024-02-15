@@ -21,9 +21,10 @@ public class CustomUserDetailsService implements UserDetailsService{
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		
+		System.out.println("Username = " + username);
 		User user = userDao.findByEmail(username)
 				.orElseThrow(() -> new ResourceNotFoundException("Email not found!!!!"));
+		System.out.println("User info id = " + user.getId() );
 		return new CustomUserDetails(user);
 	}
 

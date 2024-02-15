@@ -37,7 +37,7 @@ public class JwtUtils {
 
 	@PostConstruct
 	public void init() {
-		key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+		key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 	}
 
 	// will be invoked by User controller : signin ) , upon successful

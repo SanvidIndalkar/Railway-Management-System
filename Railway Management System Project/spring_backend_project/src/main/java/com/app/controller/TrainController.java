@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.CustomResponse;
 import com.app.dto.StopDTO;
 import com.app.dto.TrainClassesDTO;
 import com.app.dto.TrainDTO;
@@ -39,23 +40,27 @@ public class TrainController {
     public ResponseEntity<?> addTrain(@RequestBody TrainDTO trainDTO) {
         Train train = trainService.addNewTrain(trainDTO);
         if (train == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add train");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            		.body(new CustomResponse<>(true, "Something went wrong...", null));
         }
-        return ResponseEntity.ok("Train added successfully");
+        return ResponseEntity.status(HttpStatus.CREATED)
+        		.body(new CustomResponse<>(false, "Train Added Succesfully!", null));
     }
     
     // Get all trains
     @GetMapping("/allTrains")
     public ResponseEntity<?> getAllTrains() {
         List<TrainOnlyDTO> trains = trainService.findAllTrains();
-        return ResponseEntity.ok(trains);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Success!", trains));
     }
     
     // Get all trains by admin
     @GetMapping("admin/allTrain/{adminId}")
     public ResponseEntity<?> getAllTrainsByAdmin(@PathVariable Long adminId) {
         List<TrainOnlyDTO> trains = trainService.getAllTrainsByAdmin(adminId);
-        return ResponseEntity.ok(trains);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Success!", trains));
     }
     
     // Find train by Train Number
@@ -63,9 +68,10 @@ public class TrainController {
     public ResponseEntity<?> findTrainByNumber(@PathVariable Long trainNumber) {
         TrainOnlyDTO train = trainService.findTrainByNumber(trainNumber);
         if (train == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Train not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponse<>(true, "Train not found!", null));
         }
-        return ResponseEntity.ok(train);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Success!", train));
     }
     
     // Find train by Train Name
@@ -73,30 +79,34 @@ public class TrainController {
     public ResponseEntity<?> findTrainByName(@PathVariable String trainName) {
         TrainOnlyDTO train = trainService.findTrainByName(trainName);
         if (train == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Train not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponse<>(true, "Train not found!", null));
         }
-        return ResponseEntity.ok(train);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Success!", train));
     }
     
     // Reschedule a train by Train Number
     @PutMapping("/reschedule")
     public ResponseEntity<?> rescheduleTrain(@RequestBody TrainRescheduleDTO trainRescheduleDTO) {
         String message = trainService.rescheduleTrain(trainRescheduleDTO);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, message, null));
     }
     
     // Search trains from one stop to another stop
     @PostMapping("/searchTrain/startAndStop")
     public ResponseEntity<?> findTrainsByTwoStopsInSequence(@RequestBody TrainSrcDestDateDTO searchInfo) {
         List<TrainDTO> trains = trainService.findTrainsByTwoStopsInSequence(searchInfo);
-        return ResponseEntity.ok(trains);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Sucess!", trains));
     }
     
     // Find train by source and destination and date
     @PostMapping("/searchTrain")
     public ResponseEntity<?> findTrainBySourceDestinationDate(@RequestBody TrainSrcDestDateDTO srcDestDate) {
         List<TrainDTO> trains = trainService.findTrainBySourceDestinationDate(srcDestDate);
-        return ResponseEntity.ok(trains);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Sucess!", trains));
     }
     
     // Find train by ID with all details
@@ -104,9 +114,11 @@ public class TrainController {
     public ResponseEntity<?> findTrainAllDetails(@PathVariable Long trainId) {
         TrainDTO trainDTO = trainService.findTrainById(trainId);
         if (trainDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Train not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            		.body(new CustomResponse<>(true, "Something went wrong...!", null));
         }
-        return ResponseEntity.ok(trainDTO);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Sucess!", trainDTO));
     }
     
     // Find train details by ID
@@ -114,8 +126,10 @@ public class TrainController {
     public ResponseEntity<?> findTrainDetailsById(@PathVariable Long trainId) {
         TrainDTO trainDTO = trainService.findTrainById(trainId);
         if (trainDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Train not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            		.body(new CustomResponse<>(true, "Train not found!", null));
         }
-        return ResponseEntity.ok(trainDTO);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(false, "Sucess!", trainDTO));
     }
 }
