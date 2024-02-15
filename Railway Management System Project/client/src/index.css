@@ -1,0 +1,225 @@
+:root {
+    --primary-color: red;
+    --secondary-color: blue;
+
+    /* --helper-first-color : #324a76; */
+    --helper-first-color: #4073ab;
+    /* --helper-first-color : #29395a; */
+
+
+    --btn-primary-color: #4073ab;
+    --letter-spacing: 1px;
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+
+}
+
+body {
+    font-size: 16px;
+    /* Set a base font size */
+    height: 100vh;
+    /* overflow: hidden; */
+}
+
+/* h1 {
+    font-size: 2.5em;
+    
+}
+
+h2 {
+    font-size: 2em;
+    
+}
+
+h3 {
+    font-size: 1.8em;
+    
+}
+
+h4 {
+    font-size: 1.5em;
+   
+}
+
+h5 {
+    font-size: 1em;
+    
+}
+
+
+p {
+    font-size: 1em;
+   
+}
+
+
+@media (min-width: 768px) {
+    
+    
+    body {
+        font-size: 18px;
+    }
+    
+    h1 {
+        font-size: 3em;
+    }
+    
+    h2 {
+        font-size: 2.5em;
+    }
+    
+    h3 {
+        font-size: 2em;
+    }
+    
+    h4 {
+        font-size: 1.8em;
+    }
+    
+    h5 {
+        font-size: 1.5em;
+        
+    }
+    
+
+    p {
+        font-size: 1.2em;
+    }
+}
+
+@media (min-width: 1024px) {
+    
+   
+    body {
+        font-size: 20px;
+    }
+    
+    h1 {
+        font-size: 3.5em;
+    }
+    
+    h2 {
+        font-size: 3em;
+    }
+    
+    h3 {
+        font-size: 2.5em;
+    }
+    
+    h4 {
+        font-size: 2em;
+    }
+    
+    h5 {
+        font-size: 1.5em;
+        
+    }
+    
+    
+    p {
+        font-size: 1.4em;
+    }
+} */
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    margin: 0;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: capitalize;
+    letter-spacing: var(--letter-spacing);
+}
+
+.Page {
+    margin-bottom: 0px;
+    height: 20%;
+}
+
+
+
+h1 {
+    font-size: clamp(2rem, 5vw, 5rem);
+    
+}
+
+h2 {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+}
+
+h3 {
+    font-size: clamp(1.25rem, 2.5vw, 2.5rem);
+}
+
+h4 {
+    font-size: clamp(1rem, 2vw, 2rem);
+}
+
+h5 {
+    font-size: clamp(0.875rem, 1.7vw, 1.7rem);
+}
+p {
+    font-size: clamp(0.800rem, 1.4vw, 1.4rem);
+}
+
+
+@media screen and (max-width: 768px) {
+    h1 {
+        font-size: 4rem;
+    }
+    h2 {
+        font-size: 2.5rem;
+    }
+    h3 {
+        font-size: 2/1rem;
+    }
+    h4 {
+        font-size: 1.7rem;
+    }
+    h5 {
+        font-size: 1.5rem;
+    }
+    p {
+        font-size: 1.3rem;
+    }
+    
+}
+
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 3rem;
+    }
+    h2 {
+        font-size: 2rem;
+    }
+    h3 {
+        font-size: 1.5rem;
+    }
+    h4 {
+        font-size: 1.2rem;
+    }
+    h5 {
+        font-size: 0.9rem;
+    }
+    p {
+        font-size: 0.6rem;
+    }
+}
+
+
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.react-link{
+    text-decoration: none;
+    color: '#6b6b6b';
+  }
