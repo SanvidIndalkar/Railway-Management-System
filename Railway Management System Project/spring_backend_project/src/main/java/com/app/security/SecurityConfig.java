@@ -33,16 +33,16 @@ public class SecurityConfig {
 		.disable()
 		.authorizeRequests()
 		.antMatchers("/trains/number/**",
-				"/trains/name/**").permitAll()
+				"/trains/name/**","/user/**","/admin/**"
+				,"/trains/searchTrain/startAndStop").permitAll()
 		.antMatchers("/trains/allTrains",
 				"/trains/searchTrain",
 				"/trains/add",
 				"/trains/findTrainById/**",
 				"/trains/admin/allTrain/**",
-				"/admin/**",
 				"/booking/bookings/**").hasRole("ADMIN")
-		.antMatchers("/trains/searchTrain/startAndStop","/user/**",
-				"/booking/passengers/**", "/booking/booking/**").hasRole("USER")
+		.antMatchers("/booking/passengers/**", 
+				"/booking/booking/**").hasRole("USER")
 		.anyRequest().authenticated()
 		.and()
 		.sessionManagement()

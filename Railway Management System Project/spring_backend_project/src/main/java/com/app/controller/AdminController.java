@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.custom_exceptions.ResourceNotFoundException;
+import com.app.dto.CustomResponse;
+import com.app.dto.LogIn;
 import com.app.dto.SigninResponse;
 import com.app.entities.Train;
 import com.app.entities.User;
@@ -38,19 +40,23 @@ public class AdminController {
 	private JwtUtils utils;
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody User admin) {
+	public ResponseEntity<?> login(@RequestBody LogIn admin) {
 		try {
 			Authentication verifiedAuth = mgr
 					.authenticate(new UsernamePasswordAuthenticationToken
 							(admin.getEmail(), admin.getPassword()));
-			
+			User user = userService.findByEmail(admin.getEmail())
+					.orElseThrow(() -> new ResourceNotFoundException("No Email Found!"));
+			if(user.getRole() != UserRole.ROLE_ADMIN) throw new BadCredentialsException("Not a Admin!");
 			return ResponseEntity
 					.ok(new SigninResponse(utils.generateJwtToken(verifiedAuth), "Successful Authentication!!!"));
 
 		} catch (BadCredentialsException e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new CustomResponse<>(true, e.getMessage(), null));
 		} catch (Exception e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new CustomResponse<>(true, e.getMessage(), null));
 		}
 	}
 
