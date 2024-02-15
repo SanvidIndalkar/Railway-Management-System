@@ -32,7 +32,17 @@ public class SecurityConfig {
 		csrf()
 		.disable()
 		.authorizeRequests()
-		.antMatchers("/**").permitAll()
+		.antMatchers("/trains/number/**",
+				"/trains/name/**").permitAll()
+		.antMatchers("/trains/allTrains",
+				"/trains/searchTrain",
+				"/trains/add",
+				"/trains/findTrainById/**",
+				"/trains/admin/allTrain/**",
+				"/admin/**",
+				"/booking/bookings/**").hasRole("ADMIN")
+		.antMatchers("/trains/searchTrain/startAndStop","/user/**",
+				"/booking/passengers/**", "/booking/booking/**").hasRole("USER")
 		.anyRequest().authenticated()
 		.and()
 		.sessionManagement()

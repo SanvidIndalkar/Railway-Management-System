@@ -5,7 +5,12 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.CustomResponse;
+import com.app.dto.SigninResponse;
 import com.app.entities.User;
 import com.app.enums.UserRole;
+import com.app.security.JwtUtils;
 import com.app.service.TesingEmailService;
 import com.app.service.UserService;
 import com.app.utils.Pair;
@@ -22,6 +30,7 @@ import com.app.utils.Pair;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+	
 
 	private Map<String, Pair<String, Long>> otpMap = new ConcurrentHashMap<>();
 
@@ -30,6 +39,12 @@ public class UserController {
 
 	@Autowired
 	private TesingEmailService emailSender;
+	
+	@Autowired
+	private AuthenticationManager mgr;
+	
+	@Autowired
+	private JwtUtils utils;
 
 	@GetMapping("/generateOTP")
 	public ResponseEntity<String> generateOTP(@RequestParam String email) {
@@ -57,12 +72,14 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<String> register(@RequestParam String email, @RequestParam String otp,
+	public ResponseEntity<?> register(@RequestParam String email, @RequestParam String otp,
 			@RequestBody User user) {
 		// Retrieve OTP and its timestamp
 		Pair<String, Long> otpPair = otpMap.get(email);
 		if (otpPair == null) {
-			return ResponseEntity.badRequest().body("OTP not found or expired.");
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new CustomResponse<>(true, "OTP not found or expired.", null));
 		}
 
 		// Compare OTPs
@@ -72,25 +89,40 @@ public class UserController {
 			if (currentTime - otpPair.getSecond() > 5 * 60 * 1000) {
 				// Remove expired OTP from the map
 				otpMap.remove(email);
-				return ResponseEntity.badRequest().body("OTP has expired.");
+				return ResponseEntity
+						.status(HttpStatus.BAD_REQUEST)
+						.body(new CustomResponse<>(true, "OTP has expired.", null));
 			}
 			// OTP is valid, add the user
 			userService.addUser(user);
 			// Remove OTP from the map
 			otpMap.remove(email);
-			return ResponseEntity.ok("OTP verification successful. User added successfully.");
+			return ResponseEntity
+					.status(HttpStatus.OK)
+					.body(new CustomResponse<>(false, "OTP verification successful. User added successfully.", null));
 		} else {
 			// Invalid OTP
-			return ResponseEntity.badRequest().body("Invalid OTP.");
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(new CustomResponse<>(false, "Invalid OTP.", null));
 		}
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestBody User user) {
-		User userFound = userService.findByEmailAndPasswordAndRole(user, UserRole.ROLE_USER);
-		if (userFound == null)
-			return "No User";
-		return "User found";
+	public ResponseEntity<?> login(@RequestBody User user) {
+		try {
+			Authentication verifiedAuth = mgr
+					.authenticate(new UsernamePasswordAuthenticationToken
+							(user.getEmail(), user.getPassword()));
+			
+			return ResponseEntity
+					.ok(new SigninResponse(utils.generateJwtToken(verifiedAuth), "Successful Authentication!!!"));
+
+		} catch (BadCredentialsException e) {
+			return ResponseEntity.notFound().build();
+		} catch (Exception e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
 }
