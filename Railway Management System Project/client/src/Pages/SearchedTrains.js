@@ -6,6 +6,7 @@ import styled from "styled-components";
 import HomeSearch from "../Components/HomeComponents/HomeSearch";
 import SearchedTrainsList from "../Components/SearchedTrains/SearchedTrainsList";
 import { useLocation } from "react-router-dom";
+import { Navbar } from "react-bootstrap";
 
 function SearchedTrains() {
 
@@ -13,21 +14,26 @@ function SearchedTrains() {
   const receivedData = location.state;
   console.log(receivedData);
 
-  return (<Wrapper>
-    <section>
-      <br />
-      <br />
-      <HomeSearch searchData={receivedData}/>
-    </section>
+  return (
+    <>
+      <Navbar />
+      <Wrapper>
+        <section>
+          <br />
+          <br />
+          <HomeSearch searchData={receivedData} />
+        </section>
 
 
-    <div className="searchedtrains-container">
-      <div>
-        <SearchedTrainsList />
-      </div>
-    </div>
+        <div className="searchedtrains-container">
+          <div>
+            <SearchedTrainsList />
+          </div>
+        </div>
 
-  </Wrapper>);
+      </Wrapper>
+    </>
+  );
 }
 
 const Wrapper = styled.main`
@@ -36,12 +42,12 @@ const Wrapper = styled.main`
       /* background-color: #C2D0F2;   //nattu madhura sanvid */
       /* background-color: #a2d2f2;   //nattu madhura sanvid */
       background-color: #c3e0f7;   //nattu madhura sanvid
-  
-
-
-    .searchedtrains-container {
-  width: 100%;
-  padding-right: 15px;
+      
+      
+      
+      .searchedtrains-container {
+        width: 100%;
+        padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;

@@ -3,11 +3,12 @@ import PassengerForm from '../Components/PassengerDetailsForm/PassengerForm';
 import styled from 'styled-components';
 import BookingDetails from './BookingDetails';
 import { Link } from 'react-router-dom';
+import { Navbar } from 'react-bootstrap';
 
 const PassengerForms = () => {
     const [numSeats, setNumSeats] = useState(1);
     const [passengersData, setPassengersData] = useState(Array(numSeats).fill({}));
-    
+
 
     const handleSeatChange = (e) => {
         const selectedSeats = parseInt(e.target.value, 10);
@@ -47,40 +48,43 @@ const PassengerForms = () => {
     };
 
     return (
-        <Wrapper>
-            <label>
-                Select Number of Seats:
-                <select value={numSeats} onChange={handleSeatChange}>
-                    {[1, 2, 3, 4, 5].map((num) => (
-                        <option key={num} value={num}>
-                            {num}
-                        </option>
+        <>
+            {/* <Navbar /> */}
+            <Wrapper>
+                <label>
+                    Select Number of Seats:
+                    <select value={numSeats} onChange={handleSeatChange}>
+                        {[1, 2, 3, 4, 5].map((num) => (
+                            <option key={num} value={num}>
+                                {num}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <form onSubmit={handleSubmit} className="mt-5">
+                    {passengersData.map((passenger, index) => (
+                        <PassengerForm
+                            key={index}
+                            index={index}
+                            onPassengerChange={handlePassengerChange}
+                        />
                     ))}
-                </select>
-            </label>
 
-            <form onSubmit={handleSubmit} className="mt-5">
-                {passengersData.map((passenger, index) => (
-                    <PassengerForm
-                        key={index}
-                        index={index}
-                        onPassengerChange={handlePassengerChange}
-                    />
-                ))}
-
-                <div className="row mb-3">
-                    <div className="col-sm-10 offset-sm-1 text-center">
-                        <button type="submit" className="btn btn-pad btn-secondary m-4">
-                            <Link className="react-link" to="/booking-details">
-                            <p>
-                                Make Payment
-                            </p>
-                            </Link>
-                        </button>
+                    <div className="row mb-3">
+                        <div className="col-sm-10 offset-sm-1 text-center">
+                            <button type="submit" className="btn btn-pad btn-secondary m-4">
+                                <Link className="react-link" to="/booking-details">
+                                    <p>
+                                        Make Payment
+                                    </p>
+                                </Link>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </Wrapper>
+                </form>
+            </Wrapper>
+        </>
     );
 };
 

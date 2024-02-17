@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 
 import React, { useState } from "react";
 import AdminNavbar from "./Components/Navbar/AdminNavbar";
@@ -17,6 +17,9 @@ import ScheduleTrain from "./Pages/ScheduleTrain";
 import SearchedTrains from "./Pages/SearchedTrains";
 import SearchedTrainsList from './Components/SearchedTrains/SearchedTrainsList';
 import styled from 'styled-components';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Logout from './Pages/Logout';
 
 
 function App() {
@@ -30,12 +33,13 @@ function App() {
     <>
     <Router>
       <div>
-        {role === 'user' ? <Navbar /> : <AdminNavbar/> }
+        {role === 'user' ? <Navbar/> : <AdminNavbar/> }
       
         <Routes>
-
+          {/* <Route path="/user-navbar" element={<Navbar/>}/> */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login/>}/>
+          <Route path="/logout" element={<Logout/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/searched-trains" element={<SearchedTrains/>} />
           <Route path="/confirm-booking" element={<ConfirmBooking/>}/>
@@ -52,7 +56,7 @@ function App() {
         </Routes>
       </div>
     </Router>
-    
+    <ToastContainer/>
     {/* //User */}
       {/* <Navbar/> */}
       {/* <Home/> */}

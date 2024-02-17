@@ -1,7 +1,7 @@
 import httpClient from '../http-common';
 
-const register = (data) => {
-    return httpClient.post('/user/register', data);
+const register = (otp,data) => {
+    return httpClient.post(`/user/register?otp=${otp}`, data);
 };
 
 const login = (data) => {

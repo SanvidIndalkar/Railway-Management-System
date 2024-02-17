@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ import com.app.utils.Pair;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 	
 
@@ -53,8 +55,13 @@ public class UserController {
 	private PasswordEncoder passwordEncoder;
 
 	@GetMapping("/generateOTP")
-	public ResponseEntity<String> generateOTP(@RequestParam String email) {
-		// Generate random OTP
+	public ResponseEntity<?> generateOTP(@RequestParam String email) {
+		boolean userPresent = userService.findByEmail(email).isPresent();
+		if(userPresent) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new CustomResponse<>(true,"Email already in use! Please login.", null ));
+		}
+			// Generate random OTP
 		String otp = generateRandomOTP();
 
 		// Store OTP with current timestamp
@@ -63,7 +70,8 @@ public class UserController {
 		// Send email with OTP
 		emailSender.sendEmail(email, "OTP Verification", "Your OTP for registration is " + otp);
 
-		return ResponseEntity.ok("OTP has been sent to your email.");
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new CustomResponse<>(false, "OTP has been sent to your email.", null));
 	}
 
 	private String generateRandomOTP() {
@@ -78,10 +86,15 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestParam String email, @RequestParam String otp,
+	public ResponseEntity<?> register(@RequestParam String otp,
 			@RequestBody User user) {
+		boolean userPresent = userService.findByEmail(user.getEmail()).isPresent();
+		if(userPresent) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new CustomResponse<>(true,"Email already in use! Please login.", null ));
+		}
 		// Retrieve OTP and its timestamp
-		Pair<String, Long> otpPair = otpMap.get(email);
+		Pair<String, Long> otpPair = otpMap.get(user.getEmail());
 		if (otpPair == null) {
 			return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
@@ -94,7 +107,7 @@ public class UserController {
 			long currentTime = System.currentTimeMillis();
 			if (currentTime - otpPair.getSecond() > 5 * 60 * 1000) {
 				// Remove expired OTP from the map
-				otpMap.remove(email);
+				otpMap.remove(user.getEmail());
 				return ResponseEntity
 						.status(HttpStatus.BAD_REQUEST)
 						.body(new CustomResponse<>(true, "OTP has expired.", null));
@@ -103,7 +116,7 @@ public class UserController {
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			userService.addUser(user);
 			// Remove OTP from the map
-			otpMap.remove(email);
+			otpMap.remove(user.getEmail());
 			return ResponseEntity
 					.status(HttpStatus.OK)
 					.body(new CustomResponse<>(false, "OTP verification successful. User added successfully.", null));
@@ -117,17 +130,21 @@ public class UserController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LogIn user) {
+		System.out.println("Inside user login --");
 		try {
 			Authentication verifiedAuth = mgr
 					.authenticate(new UsernamePasswordAuthenticationToken
 							(user.getEmail(), user.getPassword()));
 			
+
 			User userFound = userService.findByEmail(user.getEmail())
 					.orElseThrow(() -> new ResourceNotFoundException("No Email Found!"));
 			if(userFound.getRole() != UserRole.ROLE_USER) throw new BadCredentialsException("Not a User!");
-			
-			return ResponseEntity
-					.ok(new SigninResponse(utils.generateJwtToken(verifiedAuth), "Successful Authentication!!!"));
+			SigninResponse resp = new SigninResponse(utils.generateJwtToken(verifiedAuth), userFound.getId()
+					,userFound.getEmail(), userFound.getFirstName(), userFound.getLastName(),userFound.getRole()
+					);
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new CustomResponse<>(false,"Login Successful",resp));
 
 		} catch (BadCredentialsException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -135,6 +152,7 @@ public class UserController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new CustomResponse<>(true, e.getMessage(), null));
+//			.body("Something went wrong...login");
 		}
 	}
 

@@ -1,7 +1,7 @@
 import httpClient from '../http-common';
 
-const bookTrainWithPassengers = (trainId) => {
-    return httpClient.post(`/booking/passengers/${trainId}`);
+const bookTrainWithPassengers = (trainId, data) => {
+    return httpClient.post(`/booking/passengers/${trainId}`,data);
 };
 
 const bookingDetailsOfTrain = (trainId) => {

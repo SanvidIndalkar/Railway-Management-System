@@ -1,9 +1,13 @@
 import React from "react";
+import { Navbar } from "react-bootstrap";
 
 import styled from "styled-components";
 
 function BookingDetails({ passengersData }) {
-    return (<Wrapper>
+    return (
+        <>
+        {/* <Navbar/> */}
+    <Wrapper>
         <div className="container booking-details-container">
             <h5 className="m-4">Booking Details</h5>
             <ul>
@@ -29,14 +33,16 @@ function BookingDetails({ passengersData }) {
                 </div>
             ))}
         </div>
-    </Wrapper>);
+    </Wrapper>
+</>
+    );
 }
 
 const Wrapper = styled.div`
     .passenger-information-heading{
         
     }
-
+    
     .booking-details-container {
         max-width: 800px;
         margin: 0 auto;

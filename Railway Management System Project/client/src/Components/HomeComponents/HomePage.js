@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import UserContext from "../../Contexts/UserContext";
 
 function HomePage() {
-    return (<Wrapper>
-    </Wrapper>);
+  return (<Wrapper>
+  </Wrapper>);
 }
 
 const Wrapper = styled.main`
