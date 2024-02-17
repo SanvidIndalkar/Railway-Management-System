@@ -1,1 +1,1 @@
-Railway Management System Project/client/node_modules
+client/node_modules

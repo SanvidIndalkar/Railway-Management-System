@@ -28,11 +28,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class User extends BaseEntity{
     
-    @Column(name = "username" ,unique = true)
-    @NotBlank
-    @Length(min = 5, max = 12)
-    private String username;
-    
     @NotBlank
     @Column(name = "first_name")
     private String firstName;
@@ -44,10 +39,6 @@ public class User extends BaseEntity{
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private Gender gender;
-    
-    @NotNull
-    @Column(name = "age")
-    private Integer age;
     
     @NotBlank
     @Email

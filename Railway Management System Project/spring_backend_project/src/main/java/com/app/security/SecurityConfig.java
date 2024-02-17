@@ -27,22 +27,23 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain authorizeRequests(HttpSecurity http) throws Exception {
-
+		
 		http.
 		csrf()
 		.disable()
 		.authorizeRequests()
-		.antMatchers("/trains/number/**",
-				"/trains/name/**","/user/**","/admin/**"
-				,"/trains/searchTrain/startAndStop").permitAll()
-		.antMatchers("/trains/allTrains",
-				"/trains/searchTrain",
-				"/trains/add",
-				"/trains/findTrainById/**",
-				"/trains/admin/allTrain/**",
-				"/booking/bookings/**").hasRole("ADMIN")
-		.antMatchers("/booking/passengers/**", 
-				"/booking/booking/**").hasRole("USER")
+		.antMatchers("/**").permitAll()
+//		.antMatchers("/trains/number/**",
+//				"/trains/name/**","/user/**","/admin/**"
+//				,"/trains/searchTrain/startAndStop").permitAll()
+//		.antMatchers("/trains/allTrains",
+//				"/trains/searchTrain",
+//				"/trains/add",
+//				"/trains/findTrainById/**",
+//				"/trains/admin/allTrain/**",
+//				"/booking/bookings/**").hasRole("ADMIN")
+//		.antMatchers("/booking/passengers/**", 
+//				"/booking/booking/**").hasRole("USER")
 		.anyRequest().authenticated()
 		.and()
 		.sessionManagement()

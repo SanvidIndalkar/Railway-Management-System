@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components'
 import { Navbar, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import UserContext from '../../Contexts/UserContext';
 
-function MyNavbar() {
+const MyNavbar = () => {
+
+    const navigate = useNavigate();
+    const {user, setUser} = useContext(UserContext);
+    const location = useLocation(); 
+    console.log(location.pathname);
     return (
         <Wrapper>
             <nav className="navbar navbar-expand-lg navbar-light bg-light container-fluid pad">
@@ -23,24 +29,38 @@ function MyNavbar() {
                             <li className="nav-item active">
                                 <Link to="/" className="nav-link react-link"><p>
                                     Home
-                                    </p>
-                                    </Link>
+                                </p>
+                                </Link>
                             </li>
                             <li className="nav-item">
                                 <Link to="/about" className="nav-link react-link"><p>
                                     About
-                                    </p></Link>
+                                </p></Link>
                             </li>
-                            <li className="nav-item">
-                                <Link to="/register" className="nav-link react-link"><p>
-                                    Register
+                            {user.loggedIn ?
+                                (<li className="nav-item">
+                                    <Link to="/logout" className="nav-link react-link"><p>
+                                        Logout
                                     </p></Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/login" className="nav-link react-link"><p>
-                                    Login
-                                    </p></Link>
-                            </li>
+                                </li>)
+                                :
+                                (<>
+                                    <li className="nav-item">
+                                        <Link to="/register" className="nav-link react-link"><p>
+                                            Register
+                                        </p></Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link to={{
+                                            pathname: '/login',
+                                            state : {currentpath : location.pathname}
+                                        }} className="nav-link react-link"><p>
+                                            Login
+                                        </p></Link>
+                                    </li>
+                                </>
+                                )
+                            }
 
                         </ul>
                     </div>
