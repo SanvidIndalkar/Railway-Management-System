@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import PassengerForm from '../Components/PassengerDetailsForm/PassengerForm';
 import styled from 'styled-components';
-import BookingDetails from './BookingDetails';
-import { Link } from 'react-router-dom';
-import { Navbar } from 'react-bootstrap';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import bookingService from '../Services/booking.service';
+import { toast } from 'react-toast';
 
 const PassengerForms = () => {
-    const [numSeats, setNumSeats] = useState(1);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    console.log(location)
+    let { dataForPassengers } = location.state;
+    const totalPassengers = dataForPassengers.totalPassengers;
+
+    console.log(totalPassengers);
+    const [numSeats, setNumSeats] = useState(totalPassengers);
+    console.log(numSeats);
     const [passengersData, setPassengersData] = useState(Array(numSeats).fill({}));
 
-
-    const handleSeatChange = (e) => {
-        const selectedSeats = parseInt(e.target.value, 10);
-        setNumSeats(selectedSeats);
-        setPassengersData(Array(selectedSeats).fill({}));
-    };
 
     const handlePassengerChange = (index, passenger) => {
         setPassengersData((prevPassengersData) => {
@@ -41,7 +44,18 @@ const PassengerForms = () => {
             console.log('Submitted:', passengersData);
             // <BookingDetails passengersData={passengersData}/>
             // Reset the form after submission if needed
-            setPassengersData(Array(numSeats).fill({}));
+            dataForPassengers = {...dataForPassengers, passengersDTO : passengersData}
+            bookingService.bookTrainWithPassengers(dataForPassengers.trainId, dataForPassengers)
+            .then((response) => {
+                console.log(response);
+                navigate("/booking-details", {state : {passengersData, dataForPassengers}});
+                toast.success(response.data.result);
+            })
+            .catch((error) => {
+                console.log(error);
+                toast.error(error.response.data.message);
+            })
+            
         } else {
             alert('Please fill in all fields for each passenger.');
         }
@@ -51,17 +65,6 @@ const PassengerForms = () => {
         <>
             {/* <Navbar /> */}
             <Wrapper>
-                <label>
-                    Select Number of Seats:
-                    <select value={numSeats} onChange={handleSeatChange}>
-                        {[1, 2, 3, 4, 5].map((num) => (
-                            <option key={num} value={num}>
-                                {num}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-
                 <form onSubmit={handleSubmit} className="mt-5">
                     {passengersData.map((passenger, index) => (
                         <PassengerForm
@@ -71,16 +74,10 @@ const PassengerForms = () => {
                         />
                     ))}
 
-                    <div className="row mb-3">
-                        <div className="col-sm-10 offset-sm-1 text-center">
-                            <button type="submit" className="btn btn-pad btn-secondary m-4">
-                                <Link className="react-link" to="/booking-details">
-                                    <p>
-                                        Make Payment
-                                    </p>
-                                </Link>
-                            </button>
-                        </div>
+                    <div className="col-sm-10 offset-sm-1 text-center">
+                        <button type="submit" className="btn btn-pad btn-secondary m-4">
+                            <p>Make Payment</p>
+                        </button>
                     </div>
                 </form>
             </Wrapper>

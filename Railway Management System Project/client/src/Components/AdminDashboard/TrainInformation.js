@@ -1,24 +1,24 @@
 
 import React from 'react';
 import trainData from '../../data/trainData'
-function TrainInformation() {
+function TrainInformation({trains}) {
 
     return (<>
 
-        {trainData.map((trainInfo) => {
+        {trains.map((trainInfo) => {
             const {
+                id,
+                trainNumber,
                 trainName,
-                startDate,
-                startStation,
-                startTime,
-                startDay,
-                endDate,
-                endStation,
-                endTime,
-                endDay,
-                totalSeats,
-                trainStops,
-                trainSeats
+                admin,
+                source,
+                destination,
+                sourceDepartureDate,
+                destinationArrivalDate,
+                sourceDepartureTime,
+                destinationArrivalTime,
+                totalStops,
+                trainStatus
             } = trainInfo;
             return <tr>
                 <td>
@@ -28,32 +28,32 @@ function TrainInformation() {
                 </td>
                 <td>
                     <p>
-                        {trainName}
+                        {trainNumber}
                     </p>
                 </td>
                 <td>
                     <p>
-                        {startStation}
+                        {source.stationName}
                     </p>
                 </td>
                 <td>
                     <p>
-                        {endStation}
+                        {destination.stationName}
                     </p>
                 </td>
                 <td>
                     <p>
-                        {startTime}
+                        {sourceDepartureTime}
                     </p>
                 </td>
                 <td>
                     <p>
-                        {endTime}
+                        {destinationArrivalTime}
                     </p>
                 </td>
                 <td>
                     <p>
-                        {startDate}
+                        {sourceDepartureDate}
                     </p>
                 </td>
                 <td>

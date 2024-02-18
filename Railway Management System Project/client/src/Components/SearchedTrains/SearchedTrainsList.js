@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import SingleTrain from "./SingleTrain";
 import trains from '../../data/trainData';
+import UserSearchedTrains from "../../Contexts/UserSearchedTrains";
 
-function SearchedTrainsList() {
+function SearchedTrainsList(props) {
     // const trains = [{
     //     trainName: "Shatabdi Express", startTime: "04:10",
     //     startStation: "Delhi",
@@ -28,12 +29,13 @@ function SearchedTrainsList() {
     //     endDay: "Fri", seats: 14,
     //     price: 5000
     // }];
+
+    const {userSearchedTrains} = useContext(UserSearchedTrains);
+
     return (<Wrapper>
-        {trains.map((train) => {
-            return <SingleTrain key={1} train={train} />
+        {userSearchedTrains.map((train,index) => {
+            return <SingleTrain key={index} train={train} searchData = {props.searchData}/>
         })}
-
-
     </Wrapper>);
 }
 

@@ -2,7 +2,10 @@ import React from "react";
 
 import styled from "styled-components";
 
-function TrainSeatclasses() {
+function TrainSeatclasses({trainClass}) {
+    console.log(trainClass);
+    const { name, totalSeats } = trainClass;
+    console.log(name);
     return (
         <div className="col-lg-3 col-md-3 col-sm-3 big-container">
             <Wrapper>
@@ -11,14 +14,14 @@ function TrainSeatclasses() {
                 <div className="card-body">
                     <div className="row">
                         <div className="col lead">
-                            <p className="card-text">SL</p>
+                            <p className="card-text">{name.substring(1)}</p>
                         </div>
                         <div className="col lead">
-                            <p className="card-text">Rs:1500</p>
+                            <p className="card-text"></p>
                         </div>
                     </div>
                     <div>
-                        <p className="seats-available small text-muted">Available 20</p>
+                        <p className="seats-available small text-muted">Total Capacity : {totalSeats}</p>
                     </div>
                 </div>
             </div>
@@ -30,8 +33,8 @@ function TrainSeatclasses() {
 }
 
 const Wrapper = styled.div`
-    .card{
-        margin: 0px 4px 0px 4px;   
+    .card-body{
+        margin: 0px 2px 0px 2px;   
     }
 `
 

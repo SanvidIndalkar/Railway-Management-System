@@ -67,17 +67,21 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private PassengerDao passengerDao;
+	
+	@Autowired
+	private TesingEmailService emailSender;
 
 //pending
 	@Override
-	public String bookTrain(Long trainId, BookingPassengersDTO bookingDTO) {
+	public Long bookTrain(Long trainId, BookingPassengersDTO bookingDTO) {
 
 //0)Checking if totalPassengers and Passengers List in booking DTO is same
 		if (bookingDTO.getTotalPassengers() != bookingDTO.getPassengersDTO().size())
-			return "passengers total mismatch";
+			throw new RuntimeException("Passengers mismtach!");
 
 //1) Check If train exists -> Get Train
-		Train train = trainDao.findById(trainId).orElseThrow();
+		Train train = trainDao.findById(trainId).orElseThrow(() ->
+		new ResourceNotFoundException("Train not found!"));
 
 //2) Check If User exists -> Get User
 		User user = userDao.findById(bookingDTO.getUserId()).orElseThrow();
@@ -142,7 +146,7 @@ public class BookingServiceImpl implements BookingService {
 
 //7) If total number of seats available is < total Passengers
 		if (availableSeats.size() < totalPassengers)
-			return "Seats not available";
+			throw new RuntimeException("Seats not available");
 // Throw error
 
 //8) Make the seat Availability as false and save update
@@ -150,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
 		List<Seat> bookedSeats = bookSeats(totalPassengers, availableSeats, stops, sourceStopIndex,
 				destinationStopIndex - 1);
 		if (bookedSeats.size() != totalPassengers)
-			return "something went wrong while booking seats";
+			throw new RuntimeException("Something went wrong while booking seats");
 
 //9) set passengers in to booking and set all booking fields
 		Booking booking = new Booking();
@@ -177,9 +181,29 @@ public class BookingServiceImpl implements BookingService {
 		booking.setPnr(nextPnr);
 //10) save booking
 		Booking bookingSaved = bookingDao.save(booking);
+		Long pnr = bookingSaved.getPnr();
 		if (bookingSaved == null)
-			return "booking unsuccessfull";
-		return "booking successfull";
+			return null;
+		String msg = "Dear " + user.getFirstName() + ",\r\n"
+				+ "I am pleased to confirm your reservation for the following train journey:\r\n\r\n"
+				+ "Train Number: " + train.getTrainName() + "\r\n"
+				+ "Date: " + train.getSourceDepartureDate() + "\r\n"
+				+ "Time: " + train.getSourceDepartureTime() + "\r\n"
+				+ "Source: " + bookingSaved.getSource().getStationName() + "\r\n"
+				+ "Destination: " + bookingSaved.getDestination().getStationName() + "\r\n"
+				+ "Total Seats Reserved: " + totalPassengers + "\r\n"
+				+ "Passengers' Names and Seat Number:\r\n\r\n";
+
+			for (Passenger passenger : passengers) {
+				msg += passenger.getFirstName() + " Seat Number: " 
+					+ passenger.getSeat().getTrainClass().getName().toString() 
+					+ "-" + passenger.getSeat().getSeatNumber() + "\r\n";
+			}
+
+			msg += "\r\nThank you for choosing our service. We look forward to serving you!\r\n\r\n"
+				+ "Best regards,\r\n";
+		emailSender.sendEmail(user.getEmail(), "Booking Details", null);
+		return pnr;
 //bookingDTO
 // private Long userId;
 // private StationDTO source;

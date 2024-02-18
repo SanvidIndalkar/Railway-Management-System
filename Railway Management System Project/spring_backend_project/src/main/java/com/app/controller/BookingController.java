@@ -3,6 +3,7 @@ package com.app.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +27,13 @@ public class BookingController {
 
     @PostMapping("/passengers/{trainId}")
     public ResponseEntity<?> bookTrainWithPassengers(@PathVariable Long trainId, @RequestBody BookingPassengersDTO bookingDTO) {
-        String message = bookingService.bookTrain(trainId, bookingDTO);
-        CustomResponse<String> response = new CustomResponse<>(false, "success", message);
-        return ResponseEntity.ok(response);
+        Long pnr = bookingService.bookTrain(trainId, bookingDTO);
+        if(pnr == null) {
+        	throw new RuntimeException("Something went wrong...");
+        }
+        CustomResponse<Long> response = new CustomResponse<>(false, "success", pnr);
+        return ResponseEntity.status(HttpStatus.OK)
+        		.body(response);
     }
 
     @GetMapping("/bookings/{trainId}")

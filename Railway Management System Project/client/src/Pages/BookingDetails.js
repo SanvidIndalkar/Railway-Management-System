@@ -1,40 +1,45 @@
 import React from "react";
 import { Navbar } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 
 import styled from "styled-components";
 
-function BookingDetails({ passengersData }) {
+function BookingDetails() {
+
+    const location = useLocation();
+    console.log(location);
+    const {passengersData, dataForPassengers} = location.state;
+    console.log(dataForPassengers, passengersData);
     return (
         <>
-        {/* <Navbar/> */}
-    <Wrapper>
-        <div className="container booking-details-container">
-            <h5 className="m-4">Booking Details</h5>
-            <ul>
-                <li>Booking Date: {new Date().toLocaleDateString()}</li>
-            </ul>
-            <div className="m-4">
-                <h5>Passenger Information</h5>
-            </div>
-            {passengersData.map((passenger, index) => (
-                <div key={index} className="card mb-3">
-                    <div className="card-body">
-                        <p className="card-title">Passenger {index + 1}</p>
-                        <p className="card-text">
-                            Name: {passenger.firstName} {passenger.lastName}
-                        </p>
-                        <p className="card-text">
-                            Age: {passenger.age}
-                        </p>
-                        <p className="card-text">
-                            Gender: {passenger.gender}
-                        </p>
+            <Wrapper>
+                <div className="container booking-details-container">
+                    <h5 className="m-4">Booking Details</h5>
+                    <ul>
+                        <li>Booking Date: {new Date().toLocaleDateString()}</li>
+                    </ul>
+                    <div className="m-4">
+                        <h5>Passenger Information</h5>
                     </div>
+                    {passengersData.map((passenger, index) => (
+                        <div key={index} className="card mb-3">
+                            <div className="card-body">
+                                <p className="card-title">Passenger {index + 1}</p>
+                                <p className="card-text">
+                                    Name: {passenger.firstName} {passenger.lastName}
+                                </p>
+                                <p className="card-text">
+                                    Age: {passenger.age}
+                                </p>
+                                <p className="card-text">
+                                    Gender: {passenger.gender}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
-    </Wrapper>
-</>
+            </Wrapper>
+        </>
     );
 }
 

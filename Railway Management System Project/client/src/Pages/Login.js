@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import userService from '../Services/user.service';
+import adminService from "../Services/admin.service";
 import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios";
 import UserContext from "../Contexts/UserContext"
@@ -15,6 +16,7 @@ const Login = () => {
 
     const navigate = useNavigate();
     const { user, setUser } = useContext(UserContext);
+    const [isAdmin, setIsAdmin] = useState(false);
     // console.log("User : " + user);
     const [formData, setFormData] = useState({
         email: "",
@@ -29,8 +31,45 @@ const Login = () => {
         });
     };
 
+    const handleCheckboxChange = (e) => {
+        setIsAdmin(e.target.checked);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (isAdmin) {
+            adminService.login(formData)
+            .then((response) => {
+                debugger;
+                console.log(response);
+                const token = response.data.result.jwt;
+                const id = response.data.result.id;
+                const firstName = response.data.result.firstName;
+                const lastName = response.data.result.lastName;
+                const role = response.data.result.role;
+                if (token) {
+                    setUser({
+                        id, firstName, lastName, role, loggedIn: true
+                    });
+                    sessionStorage.setItem("token", token);
+                }
+                debugger;
+                axios.defaults.headers.common[
+                    "Authorization"] = `Bearer ${sessionStorage.getItem(token)}`;
+                console.log("previousUrl : " + previousUrl);
+                debugger;
+                navigate(previousUrl);
+                toast.success(response.data.message);
+
+            })
+            .catch((error) => {
+                toast.error(`${error.response.data.message}`, {
+                    position: "top-center",
+                    autoClose: 1700
+                });
+            })
+            return;
+        }
         userService.login(formData)
             .then((response) => {
                 debugger;
@@ -92,6 +131,13 @@ const Login = () => {
 
                                 <div className="btn-container mb-2">
                                     <button type="submit" className="btn btn-primary">Login</button>
+                                </div>
+
+                                {/* Toggle button for admin login */}
+                                <div className="form-check form-switch ms-2">
+                                    <input className="form-check-input" type="checkbox" id="adminToggle"
+                                        checked={isAdmin} onChange={handleCheckboxChange} />
+                                    <label className={`form-check-label ${!isAdmin ? 'text-muted' : ''}`} htmlFor="adminToggle">Login as admin</label>
                                 </div>
                             </form>
 

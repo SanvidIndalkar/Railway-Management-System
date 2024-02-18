@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import userService from "../Services/user.service";
 import { Nav, Navbar } from "react-bootstrap";
+import adminService from "../Services/admin.service";
 
 function Register() {
 
@@ -20,24 +21,24 @@ function Register() {
         password: "",
         dob: "",
         role: "ROLE_USER",
-        password: "",
         confirmPassword: "",
-        otp: ""
+        otp: "",
+        isAdmin: false // New state for admin checkbox
     });
 
     const removeLeadingZeros = (str) => {
-        // Use a regular expression to match and replace leading zeros
         return str.replace(/^0+/, '');
     }
 
     const handleGenerateOTP = (e) => {
         const email = formData.email;
-        if (email == "") toast.error("Please provide valid email to generate OTP!");
-        else {
+        if (email === "") {
+            toast.error("Please provide valid email to generate OTP!");
+        } else {
             userService.generateOTP(email)
                 .then((response) => {
                     console.log(response);
-                    if (response.data.error == false) {
+                    if (!response.data.error) {
                         toast.success(response.data.message);
                     }
                 })
@@ -48,12 +49,11 @@ function Register() {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const { name, value, type, checked } = e.target;
+        const val = type === "checkbox" ? checked : value;
+        setFormData({ ...formData, [name]: val });
     };
 
-
-    // Get the date 15 years ago
     const getFifteenYearsAgoDate = () => {
         const today = new Date();
         today.setFullYear(today.getFullYear() - 15);
@@ -62,27 +62,29 @@ function Register() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (formData.password != formData.confirmPassword) {
-            toast.error("Passwords dont match!");
+        if (formData.password !== formData.confirmPassword) {
+            toast.error("Passwords don't match!");
             return;
         }
-        if (formData.otp == "") {
+        if (formData.otp === "") {
             toast.error("Please enter OTP!");
             return;
         }
-
         setFormData({ ...formData, mobileNo: removeLeadingZeros(formData.mobileNo) });
+        if(formData.isAdmin){
+            setFormData({...formData, role : "ROLE_ADMIN"});
+        }
+
         userService.register(formData.otp, formData)
             .then((response) => {
                 console.log(response);
-                if (response.data.message != undefined) {
-                    toast.error(`${response.data.message}`);
+                if (response.data.message !== undefined) {
+                    toast.success(`${response.data.message}`);
                 }
             })
             .catch((error) => {
                 console.log(error.response);
-                if (error.response != undefined
-                    && error.response.data != undefined && error.response.data.message != undefined) {
+                if (error.response !== undefined && error.response.data !== undefined && error.response.data.message !== undefined) {
                     toast.error(error.response.data.message);
                     return;
                 }
@@ -189,7 +191,13 @@ function Register() {
                             </div>
 
                             <div className="btn-container p-2">
-                                <button type="submit" className="btn btn-primary">Register</button>
+                                <button type="submit" className="btn btn-primary me-2">Register</button>
+                            </div>
+
+                            <div className="form-check form-switch mb-3 ms-2"> {/* New checkbox for admin */}
+                                <input className="form-check-input" type="checkbox" id="adminToggle"
+                                    checked={formData.isAdmin} onChange={handleChange} name="isAdmin" />
+                                <label className="form-check-label" htmlFor="adminToggle">Register as Admin</label>
                             </div>
                         </form>
 
