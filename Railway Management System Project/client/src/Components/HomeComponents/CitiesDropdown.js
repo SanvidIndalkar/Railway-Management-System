@@ -1,7 +1,9 @@
-import React from "react";
-import allCities from "../../data/cititesData";
+import React, { useEffect, useState } from "react";
+// import allCities from "../../data/cititesData";
+import stationService from "../../Services/station.service";
+import { toast } from "react-toast";
 
-const CityDropdown = ({ selectedCity, onCityChange, disabledCities }) => {
+const CityDropdown = ({allCities, selectedCity, onCityChange, disabledCities }) => {
   
     const availableCities = allCities.filter((city) => !disabledCities.includes(city));
   
@@ -11,8 +13,8 @@ const CityDropdown = ({ selectedCity, onCityChange, disabledCities }) => {
           Select a city
         </option>
         {availableCities.map((city) => (
-          <option key={city} value={city}>
-            {city}
+          <option key={city.id} value={city.id}>
+            {city.stationName}
           </option>
         ))}
       </select>

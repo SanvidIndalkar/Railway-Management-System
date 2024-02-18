@@ -1,53 +1,127 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 
+import Modal from 'react-bootstrap/Modal';
 import styled from "styled-components";
 import TrainSeatClasses from "./TrainSeatClasses";
 import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import StationContext from "../../Contexts/StationContext";
 
-function SingleTrain({ train }) {
+function SingleTrain({ train, searchData }) {
 
-    const { trainName, startTime, endTime, startStation, endStation, startDay, endDay, seats, price } = train;
+    console.log("In train");
+    console.log(searchData);
+    const getMonthDate = (dateString) => {
+        const date = new Date(dateString);
+        const options = { month: 'long', year: 'numeric', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    const [showModal, setShowModal] = useState(false);
+
+    const handleClose = () => setShowModal(false);
+    const handleShow = () => setShowModal(true);
+
+    const getHoursAndMinutes = (currentTime) => {
+        const [hours, minutes] = currentTime.split(":").slice(0, 2);
+        return hours + ":" + minutes;
+    }
+
+    const getDay = (currentDate) => {
+        const date = new Date(currentDate);
+        const dayNumber = date.getDay(); // Get the day of the week as a number
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = daysOfWeek[dayNumber];
+        return dayName;
+    }
+
+    console.log(train);
+    const {
+        id,
+        trainNumber,
+        trainName,
+        admin,
+        source,
+        destination,
+        sourceDepartureDate,
+        destinationArrivalDate,
+        sourceDepartureTime,
+        destinationArrivalTime,
+        totalStops,
+        trainStatus,
+        stops,
+        trainClasses
+    } = train;
+    // const { trainName, startTime, endTime, startStation, endStation, startDay, endDay, seats, price } = train;
     return (
         <Wrapper>
             <div className="big-container card container mt-4 p-1">
                 <div className="card-body">
-                    <h5 className="card-title p-3">{trainName}</h5>
+                    <p className="card-title fs-2 pb-0">{trainName} ---
+                        <span className="text-muted fs-4 p-2">
+                            {trainNumber}
+                        </span>
+                    </p>
                     <div className="container">
                         <div className="row">
                             <div className="col-md-3">
-                                <p>{startTime},{startDay}</p>
-                                <p className="text-muted city-text">{startStation}</p>
+                                <p>{getHoursAndMinutes(sourceDepartureTime)},{getDay(sourceDepartureDate).substring(0, 3)}</p>
+                                <p className="text-muted city-text">{source.stationName}</p>
                             </div>
                             <div className="col-md-6">
-                                <hr className="line" />
+                                <hr className="line" style={{ width: "80%" }} />
+                                <p className="routes" onClick={handleShow}>View Routes</p> {/* Add your link here */}
+                                <hr className="line" style={{ width: "80%" }} />
+
+                                <Modal show={showModal} onHide={handleClose}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>Routes</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <p>{source.stationName} : {getMonthDate(sourceDepartureDate)} <span>----</span>  {getHoursAndMinutes(sourceDepartureTime)}</p>
+                                        {
+                                            stops.map((route) => {
+                                                return (<>
+                                                    <p> | </p>
+                                                    <p>{route.station.stationName} : {getMonthDate(route.arrivalDate)} <span>----</span>  {getHoursAndMinutes(route.arrivalTime)}</p>
+                                                </>
+                                                )
+                                            })
+                                        }
+                                        <p> | </p>
+                                        <p>{destination.stationName} : {getMonthDate(destinationArrivalDate)} <span>----</span>  {getHoursAndMinutes(destinationArrivalTime)}</p>
+                                    </Modal.Body>
+                                </Modal>
+
+
                             </div>
                             <div className="col-md-3">
-                                <p>{endTime},{endDay}</p>
-                                <p className="text-muted city-text">{endStation}</p>
+                                <p>{getHoursAndMinutes(destinationArrivalTime)},{getDay(destinationArrivalDate).substring(0, 3)}</p>
+                                <p className="text-muted city-text">{destination.stationName}</p>
                             </div>
                         </div>
                     </div>
+
                     <div className="container padding-info">
                         <div className="bottom-paragraphs">
                             {/* <p className="card-text seats">No. of seats available : {seats}</p>
                             <p className="card-text price">Price : Rs. {price}</p> */}
-                            <TrainSeatClasses />
-                            <TrainSeatClasses />
-                            <TrainSeatClasses />
-                            <TrainSeatClasses />
+                            {trainClasses.map((trainClass, index) => {
+                                return <TrainSeatClasses key={index} trainClass={trainClass} />
+                            })
+                            }
                         </div>
                     </div>
 
                     <div className="col-md-12 text-center mt-3">
-                        <Link className="react-link" to="/confirm-booking" state={train}>
-                        {/* <Link className="react-link" to={{pathname:"/confirm-booking",state:{data : trainName}}}> */}
+                        
+                        <Link className="react-link" to="/confirm-booking" state= {{ train, searchData }}>
                             <button className="btn">
-                                <p>
-                                    Book Now
-                                </p>
+                                <p>Book Now</p>
                             </button>
                         </Link>
                     </div>
+
                 </div>
             </div>
         </Wrapper>
@@ -62,6 +136,12 @@ function SingleTrain({ train }) {
 
 const Wrapper = styled.section`
 
+.routes{
+    position: relative;
+    left: 30%;
+    color: #30839f;
+    cursor: pointer;
+}
 
 .card-title{
     font-size: 37px;

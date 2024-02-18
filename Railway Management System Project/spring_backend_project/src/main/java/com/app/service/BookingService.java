@@ -10,7 +10,7 @@ import com.app.entities.Passenger;
 public interface BookingService {
 
 
-	String bookTrain(Long trainId, BookingPassengersDTO bookingDTO);
+	Long bookTrain(Long trainId, BookingPassengersDTO bookingDTO);
 
 	List<PassengerDTO> bookingDetailsOfTrain(Long trainId);
 

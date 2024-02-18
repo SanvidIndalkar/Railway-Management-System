@@ -279,6 +279,11 @@ public class TrainServiceImpl implements TrainService {
 					&& trainByDate.getDestination().getId().equals(searchInfo.getDestination().getId())) {
 				matchingTrains.add(convertTrainToTrainDTO(trainByDate));
 			}
+			else if(trainByDate.getSource().getId() == searchInfo.getSource().getId() && trainByDate.getDestination().getId() == searchInfo.getDestination().getId()) {
+				matchingTrains.add(convertTrainToTrainDTO(trainByDate));
+			}
+			System.out.println("Source index : " + sourceIndex);
+			System.out.println("Destination index : " + destinationIndex);
 		}
 		return matchingTrains;
 	}

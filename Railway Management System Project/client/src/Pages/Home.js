@@ -13,7 +13,7 @@ function Home() {
         <>
         {/* <Navbar/> */}
             <HomePage/>
-            <HomeSearch/>
+            <HomeSearch />
         </>
     );
 }

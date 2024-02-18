@@ -1,7 +1,7 @@
 //Page 2
 
 
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import HomeSearch from "../Components/HomeComponents/HomeSearch";
 import SearchedTrainsList from "../Components/SearchedTrains/SearchedTrainsList";
@@ -27,7 +27,7 @@ function SearchedTrains() {
 
         <div className="searchedtrains-container">
           <div>
-            <SearchedTrainsList />
+            <SearchedTrainsList searchData = {receivedData}/>
           </div>
         </div>
 

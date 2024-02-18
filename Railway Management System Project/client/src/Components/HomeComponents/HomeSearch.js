@@ -1,45 +1,78 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CityDropdown from "./CitiesDropdown";
+import StationContext from '../../Contexts/StationContext'
+import UserSearchedTrains from '../../Contexts/UserSearchedTrains'
+
+import trainService from "../../Services/train.service"
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 function HomeSearch(props) {
+
+    const location = useLocation();
+    const {userSearchedTrains, setUserSearchedTrains} = useContext(UserSearchedTrains);
+
+    const { allStations, setAllStations } = useContext(StationContext);
+    console.log(allStations);
     console.log(props);
-    const from = props.searchData !== undefined ? props.searchData.fromCity : "Delhi";
-    const to = props.searchData !== undefined ? props.searchData.toCity : "Mumbai";
+    const fromIndex = props.searchData !== undefined ? props.searchData.fromCity : allStations[0]?.id;
+    const toIndex = props.searchData !== undefined ? props.searchData.toCity : allStations[1]?.id;
     const date = props.searchData !== undefined ? props.searchData.selectedDate : null;
-    
-    const [fromCity, setFromCity] = useState(from);
-    const [toCity, setToCity] = useState(to);
+
+    console.log(fromIndex);
+    console.log(toIndex);
+
+    const [fromCity, setFromCity] = useState(fromIndex);
+    const [toCity, setToCity] = useState(toIndex);
     const [selectedDate, setSelectedDate] = useState(date);
     const [isFormValid, setIsFormValid] = useState(false);
     let navigate = useNavigate();
 
+    const currentDate = new Date();
+    const nextThreeMonths = new Date(currentDate.getFullYear(), currentDate.getMonth() + 3, 0);
 
     const validateForm = () => {
         // Perform input validation here
-        const isFromCityValid = fromCity.trim() !== '';
-        const isToCityValid = toCity.trim() !== '';
         const isDateValid = selectedDate !== null;
 
         // Set the form validity
-        setIsFormValid(isFromCityValid && isToCityValid && isDateValid);
+        setIsFormValid(fromCity && toCity && isDateValid);
 
-        return isFromCityValid && isToCityValid && isDateValid;
+        return fromCity && toCity && isDateValid;
     };
 
     const handleSubmit = () => {
         if (validateForm()) {
             // Perform submission logic here
             console.log('Form submitted with:', fromCity, toCity, selectedDate);
+            const dataToSubmit = {
+                source: {
+                    id: fromCity
+                },
+                destination: {
+                    id: toCity
+                },
+                journeyDate: selectedDate
+            }
+            trainService.findTrainsByTwoStopsInSequence(dataToSubmit)
+            .then((response) => {
+                console.log("In response");
+                console.log(response.data);
+                setUserSearchedTrains(response.data.result);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
 
-            //*************************************************************************************************************************//
-            /*Post this fromCity toCity and selectedDate to backend and get response then redirect to second Page i.e searchedtrains*/
-            //*************************************************************************************************************************//
-            return navigate("searched-trains", {state:{fromCity, toCity, selectedDate}});
+
+            if (location.pathname != "/searched-trains") {
+                console.log("Going to searched-trains")
+                return navigate("/searched-trains", { state: { fromCity, toCity, selectedDate} });
+            }
+            console.log("Staying in /searched-trains");
         } else {
             console.log('Form validation failed');
         }
@@ -74,6 +107,7 @@ function HomeSearch(props) {
                                     </label>
                                     <p className="card-text">
                                         <CityDropdown
+                                            allCities={allStations}
                                             selectedCity={fromCity}
                                             onCityChange={handleFromCityChange}
                                             disabledCities={[toCity]}
@@ -92,6 +126,7 @@ function HomeSearch(props) {
                                     <p className="card-text">
                                         {/* <input name="To" className="custom-input" value="Mumbai" /> */}
                                         <CityDropdown
+                                            allCities={allStations}
                                             selectedCity={toCity}
                                             onCityChange={handleToCityChange}
                                             disabledCities={[fromCity]}
@@ -108,7 +143,17 @@ function HomeSearch(props) {
                                         <h5 name="Date" className="card-title">Date</h5>
                                     </label>
                                     <p className="card-text">
-                                        <DatePicker selected={selectedDate} onChange={handleDateChange} />
+                                    {/* <input type="date" className="form-control" id="dob" 
+                                    name="dob" value={formData.dob} onChange={handleChange} 
+                                    max={getFifteenYearsAgoDate()} required /> */}
+                                        <input
+                                            type="date"
+                                            value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+                                            onChange={(e) => handleDateChange(new Date(e.target.value))}
+                                            min={currentDate.toISOString().split('T')[0]}
+                                            max={nextThreeMonths.toISOString().split('T')[0]}
+                                            required
+                                        />
                                     </p>
                                 </div>
                             </div>

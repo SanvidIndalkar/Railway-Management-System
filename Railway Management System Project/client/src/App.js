@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import AdminNavbar from "./Components/Navbar/AdminNavbar";
 import Navbar from "./Components/Navbar/Navbar";
 import AdminDashboard from "./Pages/AdminDashboard";
@@ -11,7 +10,6 @@ import EditTrain from "./Pages/EditTrain";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import PassengerForms from "./Pages/PassengerForms";
-
 import Register from "./Pages/Register";
 import ScheduleTrain from "./Pages/ScheduleTrain";
 import SearchedTrains from "./Pages/SearchedTrains";
@@ -20,70 +18,47 @@ import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Logout from './Pages/Logout';
-
+import UserContext from './Contexts/UserContext';
 
 function App() {
+  const routeRoles = {
+    '/confirm-booking': ['ROLE_USER'],
+    '/passenger-forms': ['ROLE_USER'],
+    '/booking-details': ['ROLE_USER'],
+    '/admin/dashboard': ['ROLE_ADMIN'],
+    '/admin/train-info': ['ROLE_ADMIN'],
+    '/admin/schedule-train': ['ROLE_ADMIN'],
+    '/admin/edit-train': ['ROLE_ADMIN'],
+  };
 
-  const [role, setRole] = useState('user');
+  const { user } = useContext(UserContext);
 
-  const passengersData = [{age:"23",email: "",firstName: "Raj",from: "",gender: "male",lastName: "Indalkar",to: ""},
-  {age:"52",email: "",firstName: "Mahesh",from: "",gender: "male",lastName: "Indalkar",to: ""},
-  {age:"47",email: "",firstName: "Priti",from: "",gender: "female",lastName: "Indalkar",to: ""}]
   return (
     <>
-    <Router>
-      <div>
-        {role === 'user' ? <Navbar/> : <AdminNavbar/> }
-      
+      <Router>
+        {(user.loggedIn && user.role === "ROLE_ADMIN") ? <AdminNavbar/> : <Navbar/>}
         <Routes>
-          {/* <Route path="/user-navbar" element={<Navbar/>}/> */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login/>}/>
           <Route path="/logout" element={<Logout/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/searched-trains" element={<SearchedTrains/>} />
-          <Route path="/confirm-booking" element={<ConfirmBooking/>}/>
-          <Route path='/passenger-forms' element={<PassengerForms/>}/>
-          <Route path='/booking-details' element={<BookingDetails passengersData={passengersData} />}/>
-
-
-          <Route path="/admin/dashboard" element={<AdminDashboard/>}/>
-          <Route path='/admin/train-info' element={<AdminTrainInfo/>}/>
-          <Route path="/admin/schedule-train" element={<ScheduleTrain/>}/>
-          <Route path='admin/edit-train' element={<EditTrain/>}/>
-
           
+          {/* Protected routes */}
+          <Route path="/confirm-booking" element={<ConfirmBooking/>} roles={routeRoles['/confirm-booking']} />
+          <Route path="/passenger-forms" element={<PassengerForms/>} roles={routeRoles['/passenger-forms']} />
+          <Route path="/booking-details" element={<BookingDetails/>} roles={routeRoles['/booking-details']} />
+
+          {/* Admin routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard/>} roles={routeRoles['/admin/dashboard']} />
+          <Route path="/admin/train-info" element={<AdminTrainInfo/>} roles={routeRoles['/admin/train-info']} />
+          <Route path="/admin/schedule-train" element={<ScheduleTrain/>} roles={routeRoles['/admin/schedule-train']} />
+          <Route path="/admin/edit-train" element={<EditTrain/>} roles={routeRoles['/admin/edit-train']} />
         </Routes>
-      </div>
-    </Router>
-    <ToastContainer/>
-    {/* //User */}
-      {/* <Navbar/> */}
-      {/* <Home/> */}
-      {/* <Login/> */}
-      {/* <Register/> */}
-
-      {/* <SearchedTrains/> */}
-      {/* <ConfirmBooking/>   */}
-      {/* <PassengerForms/> */}
-      {/* <BookingDetails passengersData={passengersData}/> */}
-
-    {/* //Admin */}
-      {/* <AdminNavbar/> */}
-      {/* <AdminTrainInfo/> */}
-      {/* <AdminDashboard/> */}
-      {/* <ScheduleTrain/> */}
-      {/* <EditTrain/> */}
-
-
-      {/* done */}
-
-
-      
-      
+      </Router>
+      <ToastContainer/>
     </>
   );
 }
-
 
 export default App;

@@ -45,11 +45,17 @@ public class AdminController {
 			Authentication verifiedAuth = mgr
 					.authenticate(new UsernamePasswordAuthenticationToken
 							(admin.getEmail(), admin.getPassword()));
-			User user = userService.findByEmail(admin.getEmail())
+			User userFound = userService.findByEmail(admin.getEmail())
 					.orElseThrow(() -> new ResourceNotFoundException("No Email Found!"));
-			if(user.getRole() != UserRole.ROLE_ADMIN) throw new BadCredentialsException("Not a Admin!");
+			if(userFound.getRole() != UserRole.ROLE_ADMIN) throw new BadCredentialsException("Not a Admin!");
+			
+			SigninResponse resp = new SigninResponse(utils.generateJwtToken(verifiedAuth), userFound.getId()
+					,userFound.getEmail(), userFound.getFirstName(),userFound.getLastName(), userFound.getRole()
+					);
+			
 			return ResponseEntity
-					.ok(new SigninResponse(utils.generateJwtToken(verifiedAuth), "Successful Authentication!!!"));
+					.status(HttpStatus.OK)
+					.body(new CustomResponse<>(false,"Login Successful",resp));
 
 		} catch (BadCredentialsException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)

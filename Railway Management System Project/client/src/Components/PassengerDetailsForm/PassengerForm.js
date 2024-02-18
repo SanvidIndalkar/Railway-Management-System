@@ -8,9 +8,6 @@ const PassengerForm = ({ index, onPassengerChange }) => {
         lastName: '',
         age: '',
         gender: '',
-        from: '',
-        to: '',
-        email: '',
     });
 
     const handleChange = (e) => {
@@ -104,9 +101,9 @@ const PassengerForm = ({ index, onPassengerChange }) => {
                                 required
                             >
                                 <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
                     </div>
