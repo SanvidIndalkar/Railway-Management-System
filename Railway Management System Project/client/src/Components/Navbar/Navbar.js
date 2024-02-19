@@ -10,6 +10,9 @@ const MyNavbar = () => {
     const {user, setUser} = useContext(UserContext);
     const location = useLocation(); 
     console.log(location.pathname);
+
+    
+
     return (
         <Wrapper>
             <nav className="navbar navbar-expand-lg navbar-light bg-light container-fluid pad">
@@ -35,6 +38,11 @@ const MyNavbar = () => {
                             <li className="nav-item">
                                 <Link to="/about" className="nav-link react-link"><p>
                                     About
+                                </p></Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link to="/check-pnr" className="nav-link react-link"><p>
+                                    PNR Status
                                 </p></Link>
                             </li>
                             {user.loggedIn ?

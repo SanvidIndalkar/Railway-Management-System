@@ -1,62 +1,44 @@
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import PassengersInfo from "../Components/AdminTrainInfo/PassengerInfo";
 import TrainInfo from "../Components/AdminTrainInfo/TrainInfo";
 import AdminNavbar from "../Components/Navbar/AdminNavbar";
-
-import React from "react";
+import bookingService from "../Services/booking.service"
+import Loading from "../Components/Loading/Loading";
 
 function AdminTrainInfo() {
-    //train name start source time and destination time no. of stops seats avaliable total seats 
-    const trainDetails = {
-        trainName : "Shatabdi Express",
+    
+    const location = useLocation();
+    const [loading, setLoading] = useState(false);
+    console.log(location);
+    
+    const trainDetails = location.state.trainInfo;
+    
 
-        startDate : "21 Feb 2024",
-        startStation : "Delhi",
-        startTime : "10.12",
-        startDay : "Thu",
+    const [passengers, setPassengers] = useState([]);
+    useEffect(() => {
 
-        endDate : "22 Feb 2024",
-        endStation : "Mumbai",
-        endTime : "02:23",
-        endDay : "Fri",
+        setLoading(true);
+        bookingService.bookingDetailsOfTrain(trainDetails.id)
+        .then((response) => {
+            console.log(response);
+            console.log(response.data.result);
+            setPassengers(response.data.result);
+        })
+        .catch((error) => {
+            console.log(error.response.data.message)
+        })
+        .finally(() => {
+            setLoading(false);
+        })
+    },[])    
 
-        totalSeats : {"SL":15, "1A" : 15, "2A": 15, "3A": 15},
-
-        trainStops : ["Mumbai", "Kalyan", "Pune", "Satara", "Sangli"],
-        trainSeats : [ {"SL":15, "1A" : 15, "2A": 15, "3A": 15},
-                        {"SL":15, "1A" : 15, "2A": 15, "3A": 15}]
-    }
-
-    const passengersDetails = [{
-        PNR : 1000,
-        firstName : "Sanvid",
-        lastName: "Indalkar",
-        age: 23,
-        gender: "M",
-        from: "Kalyan",
-        to: "Mumbai",
-        email: "sanvid@gmail.com"
-    },{PNR : 1001,
-    firstName : "Mahesh",
-    lastName: "Indalkar",
-    age: 53,
-    gender: "M",
-    from: "Pune",
-    to: "Mumbai",
-    email: "mahesh@gmail.com"},
-    {PNR : 1002,
-        firstName : "Riya",
-        lastName: "Mokashi",
-        age: 23,
-        gender: "F",
-        from: "Mumbai",
-        to: "Kolhapur",
-        email: "riya@gmail.com"}]
-    return ( <>
+    return ( <> {loading && <Loading/>}
     <div>
         <TrainInfo trainDetails={trainDetails}/>
     </div>
     <section>
-        <PassengersInfo passengersDetails = {passengersDetails}/>
+        <PassengersInfo passengersDetails = {passengers}/>
     </section>
     </> );
 }

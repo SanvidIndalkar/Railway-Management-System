@@ -38,9 +38,10 @@ public class BookingController {
 
     @GetMapping("/bookings/{trainId}")
     public ResponseEntity<?> bookingDetailsOfTrain(@PathVariable Long trainId) {
+    	System.out.println("In booking ");
         List<PassengerDTO> passengers = bookingService.bookingDetailsOfTrain(trainId);
         CustomResponse<List<PassengerDTO>> response = new CustomResponse<>(false, "success", passengers);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/booking/{pnr}")

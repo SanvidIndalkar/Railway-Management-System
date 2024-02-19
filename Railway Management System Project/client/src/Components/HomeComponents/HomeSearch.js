@@ -9,9 +9,12 @@ import trainService from "../../Services/train.service"
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import bookingService from "../../Services/booking.service";
+import Loading from "../Loading/Loading";
 
 function HomeSearch(props) {
 
+    const [loading, setLoading] = useState(false);
     const location = useLocation();
     const {userSearchedTrains, setUserSearchedTrains} = useContext(UserSearchedTrains);
 
@@ -57,6 +60,7 @@ function HomeSearch(props) {
                 },
                 journeyDate: selectedDate
             }
+            setLoading(true);
             trainService.findTrainsByTwoStopsInSequence(dataToSubmit)
             .then((response) => {
                 console.log("In response");
@@ -65,6 +69,9 @@ function HomeSearch(props) {
             })
             .catch((error) => {
                 console.log(error);
+            })
+            .finally(()=> {
+                setLoading(false);
             });
 
 
@@ -96,6 +103,7 @@ function HomeSearch(props) {
 
     return (
         <Wrapper>
+            {loading && <Loading/>}
             <div className="container p-2 top-margin">
                 <div className="container">
                     <div className="row">
@@ -162,7 +170,7 @@ function HomeSearch(props) {
                     <div className="row mt-3 mb-2">
                         <div className="col-sm-12 text-center">
                             {/* <Link className="react-link" to='/searched-trains'> */}
-                            <button onClick={handleSubmit} className="btn btn-pad">
+                            <button onClick={handleSubmit} className="btn btn-pad m-4">
                                 Search
                             </button>
                             {/* </Link> */}

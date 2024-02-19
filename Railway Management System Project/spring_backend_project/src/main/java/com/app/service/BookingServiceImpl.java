@@ -199,10 +199,10 @@ public class BookingServiceImpl implements BookingService {
 					+ passenger.getSeat().getTrainClass().getName().toString() 
 					+ "-" + passenger.getSeat().getSeatNumber() + "\r\n";
 			}
-
+			msg += "\r\nYour PNR : " + bookingSaved.getPnr() +"\r\n\r\n";
 			msg += "\r\nThank you for choosing our service. We look forward to serving you!\r\n\r\n"
 				+ "Best regards,\r\n";
-		emailSender.sendEmail(user.getEmail(), "Booking Details", null);
+		emailSender.sendEmail(user.getEmail(), "Booking Details", msg);
 		return pnr;
 //bookingDTO
 // private Long userId;
@@ -273,10 +273,10 @@ public class BookingServiceImpl implements BookingService {
 
 // 1) Find train with given Id
 		Train train = trainDao.findById(trainId).orElseThrow(() -> new ResourceNotFoundException("Train Not Found!"));
-
+		
 // 2) Find all passengers travelling by same train
 		List<Passenger> passengers = passengerDao.findByTrain(train);
-
+		System.out.println(passengers.size());
 		List<PassengerDTO> passengersDto = passengers.stream()
 				.map((passenger) -> mapper.map(passenger, PassengerDTO.class)).collect(Collectors.toList());
 
@@ -295,6 +295,7 @@ public class BookingServiceImpl implements BookingService {
 // 3) fill booking details pnr dto correctly
 		List<BookingDetailsPnrDTO> bookingDetailsList = new ArrayList<>();
 		for (Passenger passenger : passengers) {
+			passenger.getTrain().getStops().size();
 			BookingDetailsPnrDTO bookingDetails = new BookingDetailsPnrDTO();
 
 			// Mapping passenger details to DTO
@@ -304,14 +305,12 @@ public class BookingServiceImpl implements BookingService {
 
 			// Assuming source and destination can be obtained from the Train entity
 			// associated with the booking
-			bookingDetails.setSource(mapper.map(passenger.getTrain().getSource(), StationDTO.class));
-			bookingDetails.setDestination(mapper.map(passenger.getTrain().getDestination(), StationDTO.class));
+			bookingDetails.setSource(passenger.getTrain().getSource().getStationName());
+			bookingDetails.setDestination(passenger.getTrain().getDestination().getStationName());
 
 			// Mapping seat details to DTO
-			SeatDTO seatDTO = new SeatDTO();
-			seatDTO.setTrainClass(passenger.getSeat().getTrainClass());
-			seatDTO.setSeatNumber(passenger.getSeat().getSeatNumber());
-			bookingDetails.setSeat(seatDTO);
+			bookingDetails.setTrainClass(passenger.getSeat().getTrainClass().getName());
+			bookingDetails.setSeatNumber(passenger.getSeat().getSeatNumber());
 
 			// Adding booking details to the list
 			bookingDetailsList.add(bookingDetails);

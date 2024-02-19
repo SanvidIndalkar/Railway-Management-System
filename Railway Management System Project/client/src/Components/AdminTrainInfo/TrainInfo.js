@@ -3,22 +3,22 @@ import styled from "styled-components";
 
 function TrainInfo({trainDetails}) {
 
+    console.log(trainDetails);
 
     const {
+        id,
+        trainNumber,
         trainName,
-
-        startDate,
-        startStation,
-        startTime,
-        startDay,
-        endDate,
-        endStation,
-        endTime,
-        endDay,
-        totalSeats ,
-        trainStops,
-        trainSeats
-    } = trainDetails;
+        admin,
+        source,
+        destination,
+        sourceDepartureDate,
+        destinationArrivalDate,
+        sourceDepartureTime,
+        destinationArrivalTime,
+        totalStops,
+        trainStatus
+      } = trainDetails;
 
     return ( 
         <Wrapper>
@@ -28,15 +28,15 @@ function TrainInfo({trainDetails}) {
                     <div className="container">
                         <div className="row">
                             <div className="col-md-3">
-                                <p>{startTime},{startDay}</p>
-                                <p className="text-muted city-text">{startStation}</p>
+                                <p>{sourceDepartureTime},{sourceDepartureDate}</p>
+                                <p className="text-muted city-text">{source.stationName}</p>
                             </div>
                             <div className="col-md-6">
                                 <hr className="line" />
                             </div>
                             <div className="col-md-3">
-                                <p>{endTime},{endDay}</p>
-                                <p className="text-muted city-text">{endStation}</p>
+                                <p>{destinationArrivalTime},{destinationArrivalDate}</p>
+                                <p className="text-muted city-text">{destination.stationName}</p>
                             </div>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,12 +14,15 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.app.custom_exceptions.ResourceNotFoundException;
 import com.app.dao.AdminDao;
+import com.app.dao.BookingDao;
+import com.app.dao.PassengerDao;
 import com.app.dao.SeatAvailabiltyDao;
 import com.app.dao.SeatDao;
 import com.app.dao.StationDao;
@@ -27,9 +31,12 @@ import com.app.dao.TrainDao;
 import com.app.dto.StopDTO;
 import com.app.dto.TrainClassesDTO;
 import com.app.dto.TrainDTO;
+import com.app.dto.TrainEditDTO;
 import com.app.dto.TrainOnlyDTO;
 import com.app.dto.TrainRescheduleDTO;
 import com.app.dto.TrainSrcDestDateDTO;
+import com.app.entities.Booking;
+import com.app.entities.Passenger;
 import com.app.entities.Seat;
 import com.app.entities.SeatAvailability;
 import com.app.entities.Station;
@@ -45,6 +52,12 @@ import ch.qos.logback.core.joran.util.beans.BeanUtil;
 @Transactional
 public class TrainServiceImpl implements TrainService {
 
+	@Autowired
+	private BookingDao bookingDao;
+	
+	@Autowired
+	private PassengerDao passDao;
+	
 	@Autowired
 	private TesingEmailService emailSender;
 
@@ -164,7 +177,6 @@ public class TrainServiceImpl implements TrainService {
 
 	@Override
 	public List<TrainOnlyDTO> findAllTrains() {
-		emailSender.sendEmail("sanvidmindalkar@gmail.com", "Tesint purposes", "Getting Trains Now");
 // List<Train> trains = trainDao.findAll();
 		return trainDao.findAll().stream().map((train) -> mapper.map(train, TrainOnlyDTO.class))
 				.collect(Collectors.toList());
@@ -449,6 +461,32 @@ public class TrainServiceImpl implements TrainService {
 			return TrainStatus.RUNNING;
 		} else {
 			return TrainStatus.COMPLETED;
+		}
+	}
+
+	@Override
+	public boolean editTrain(Long trainId, TrainEditDTO trainEditDTO) {
+		Train train = trainDao.findById(trainId).orElseThrow(() -> new ResourceNotFoundException("Train Not found!"));
+		System.out.println(trainEditDTO.getTrainName() + " " + trainEditDTO.getTrainNumber());
+		train.setTrainNumber(trainEditDTO.getTrainNumber());
+		train.setTrainName(trainEditDTO.getTrainName());
+		Train train1 = trainDao.save(train);
+		if(train1 == null) return false;
+		
+		sendMailToPassengersOnThereBooking(train);
+		return true;
+	}
+
+	@Async
+	private void sendMailToPassengersOnThereBooking(Train train) {
+
+		List<Booking> bookings = bookingDao.findByTrain(train);
+		List<User> users = bookings.stream().map((booking)-> booking.getUser()).collect(Collectors.toList());
+		 String trainInfo = "Train Number: " + train.getTrainNumber() + "\nTrain Name: " + train.getTrainName();
+		for(int i = 0; i < users.size(); i++) {
+			String msg = "Dear Passenger,\n\nWe would like to inform you that there has been a change in the details of your booking for PNR : " + bookings.get(i).getPnr() + "\n\n"
+					+ "Train Information:\n" + trainInfo + "\n\nPlease review your booking details accordingly.";
+			emailSender.sendEmail(users.get(i).getEmail(), "Train Number and Name Changed", msg);
 		}
 	}
 

@@ -3,21 +3,18 @@ import styled from "styled-components";
 
 function PassengersInfo({ passengersDetails }) {
 
+    console.log(passengersDetails);
     return (
         <Wrapper>
             <h5 className="table-heading">Passengers Details</h5>
-
             <div className="container">
-
                 <div className="table m-4">
-
                     <table className="table-responsive table-bordered">
                         <thead>
                             <tr>
-
-                            <th className="p-4">
+                                <th className="p-4">
                                     <p>
-                                        PNR
+                                        Sr No.
                                     </p>
                                 </th>
                                 <th className="p-4">
@@ -27,33 +24,13 @@ function PassengersInfo({ passengersDetails }) {
                                 </th>
                                 <th className="p-4">
                                     <p>
-                                        Age
-                                    </p>
-                                </th>
-                                <th className="p-4">
-                                    <p>
                                         Gender
-                                    </p>
-                                </th>
-                                <th className="p-4">
-                                    <p>
-                                        Email
-                                    </p>
-                                </th>
-                                <th className="p-4">
-                                    <p>
-                                        From
-                                    </p>
-                                </th>
-                                <th className="p-4">
-                                    <p>
-                                        To
                                     </p>
                                 </th>
                             </tr>
                         </thead>
                         <tbody className="p-4 m-4">
-                        {passengersDetails.map((passenger) => {
+                            {passengersDetails.map((passenger,index) => {
                                 const {
                                     PNR,
                                     firstName,
@@ -64,33 +41,16 @@ function PassengersInfo({ passengersDetails }) {
                                     to,
                                     email
                                 } = passenger;
-                                return (<tr>
+                                return (<tr key={index}>
                                     <td><p>
-                                        {PNR}
-                                    </p>
-                                    </td>
+                                        {index+1}
+                                        </p></td>
                                     <td><p>
                                         {firstName + " " + lastName}
                                     </p>
                                     </td>
                                     <td><p>
-                                        {age}
-                                    </p>
-                                    </td>
-                                    <td><p>
                                         {gender}
-                                    </p>
-                                    </td>
-                                    <td><p>
-                                        {email}
-                                    </p>
-                                    </td>
-                                    <td><p>
-                                        {from}
-                                    </p>
-                                    </td>
-                                    <td><p>
-                                        {to}
                                     </p>
                                     </td>
                                 </tr>)
