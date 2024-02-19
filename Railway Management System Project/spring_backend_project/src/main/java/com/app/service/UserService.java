@@ -14,5 +14,8 @@ public interface UserService {
 	User findByEmail(User user);
 
 	Optional<User> findByEmail(String email);
+	
+	void processForgotPassword(String email);
 
+	void processResetPassword(String email, String token, String newPassword);
 }

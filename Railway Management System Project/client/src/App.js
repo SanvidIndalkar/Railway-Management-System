@@ -22,6 +22,7 @@ import Logout from './Pages/Logout';
 import UserContext from './Contexts/UserContext';
 import PNRStatus from './Pages/PNRStatus';
 import ForgotPassowrd from './Pages/ForgotPassword';
+import ResetPassword from './Pages/ResetPassword';
 
 function App() {
   debugger;
@@ -61,6 +62,7 @@ function App() {
           <Route path="/searched-trains" element={<SearchedTrains />} />
           <Route path='/check-pnr' element={<PNRStatus/>}/>
           <Route path='/forgot-password' element={<ForgotPassowrd/>}/>
+          <Route path='/reset-password' element={<ResetPassword/>}/>
           {/* Protected routes */}
           <Route path="/confirm-booking" element={<ConfirmBooking />} roles={routeRoles['/confirm-booking']} />
           <Route path="/passenger-forms" element={<PassengerForms />} roles={routeRoles['/passenger-forms']} />
