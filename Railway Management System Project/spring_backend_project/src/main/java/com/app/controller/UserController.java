@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.custom_exceptions.ResourceNotFoundException;
 import com.app.dto.CustomResponse;
 import com.app.dto.LogIn;
+import com.app.dto.ResetPasswordDto;
 import com.app.dto.SigninResponse;
 import com.app.entities.User;
 import com.app.enums.UserRole;
@@ -155,5 +156,19 @@ public class UserController {
 //			.body("Something went wrong...login");
 		}
 	}
+	
+	@PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        userService.processForgotPassword(email);
+        CustomResponse resp = new CustomResponse<>(false, "Success!", "Password reset link sent to your email.");
+        return ResponseEntity.status(HttpStatus.OK).body(resp);
+    }
+	
+	@PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPassword) {
+        userService.processResetPassword(resetPassword.getEmail(), resetPassword.getToken(), resetPassword.getNewPassword());
+        CustomResponse resp = new CustomResponse<>(false, "Success!", "Password Reset Successful!");
+        return ResponseEntity.status(HttpStatus.OK).body(resp);
+    }
 
 }

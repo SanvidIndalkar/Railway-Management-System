@@ -12,4 +12,12 @@ const generateOTP = (email) => {
     return httpClient.get(`/user/generateOTP?email=${email}`);
 };
 
-export default { register, login, generateOTP }
+const forgotPassword = (email) => {
+    return httpClient.post('/user/forgot-password?email=' + email);
+}
+
+const resetPassword = (data) => {
+    return httpClient.post('/user/reset-password', data);
+}
+
+export default { register, login, generateOTP, forgotPassword, resetPassword }
