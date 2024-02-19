@@ -7,12 +7,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios";
 import UserContext from "../Contexts/UserContext"
 import { Navbar } from "react-bootstrap";
+import Loading from "../Components/Loading/Loading";
 
 const Login = () => {
 
+    const [loading, setLoading] = useState(false);
     const location = useLocation();
     console.log(location);
-    const previousUrl = location.state?.currentpath;
+    const previousUrl = location.state?.currentpath || '/';
 
     const navigate = useNavigate();
     const { user, setUser } = useContext(UserContext);
@@ -38,38 +40,44 @@ const Login = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (isAdmin) {
+            setLoading(true);
             adminService.login(formData)
-            .then((response) => {
-                debugger;
-                console.log(response);
-                const token = response.data.result.jwt;
-                const id = response.data.result.id;
-                const firstName = response.data.result.firstName;
-                const lastName = response.data.result.lastName;
-                const role = response.data.result.role;
-                if (token) {
-                    setUser({
-                        id, firstName, lastName, role, loggedIn: true
-                    });
-                    sessionStorage.setItem("token", token);
-                }
-                debugger;
-                axios.defaults.headers.common[
-                    "Authorization"] = `Bearer ${sessionStorage.getItem(token)}`;
-                console.log("previousUrl : " + previousUrl);
-                debugger;
-                navigate(previousUrl);
-                toast.success(response.data.message);
+                .then((response) => {
+                    debugger;
+                    console.log(response);
+                    const token = response.data.result.jwt;
+                    const id = response.data.result.id;
+                    const firstName = response.data.result.firstName;
+                    const lastName = response.data.result.lastName;
+                    const role = response.data.result.role;
+                    if (token) {
+                        sessionStorage.setItem("id", id.toString());
+                        sessionStorage.setItem("firstName", firstName);
+                        sessionStorage.setItem("lastName", lastName);
+                        sessionStorage.setItem("role", role);
+                        sessionStorage.setItem("loggedIn", true);
+                        sessionStorage.setItem("token", token);
+                        setUser({ id, firstName, lastName, role, loggedIn: true });
+                    }
+                    axios.defaults.headers.common[
+                        "Authorization"] = `Bearer ${sessionStorage.getItem(token)}`;
+                    console.log("previousUrl : " + previousUrl);
+                    navigate('/');
+                    toast.success(response.data.message);
 
-            })
-            .catch((error) => {
-                toast.error(`${error.response.data.message}`, {
-                    position: "top-center",
-                    autoClose: 1700
-                });
-            })
+                })
+                .catch((error) => {
+                    toast.error(`${error.response.data.message}`, {
+                        position: "top-center",
+                        autoClose: 1700
+                    });
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
             return;
         }
+        setLoading(true);
         userService.login(formData)
             .then((response) => {
                 debugger;
@@ -80,18 +88,20 @@ const Login = () => {
                 const lastName = response.data.result.lastName;
                 const role = response.data.result.role;
                 if (token) {
-                    setUser({
-                        id, firstName, lastName, role, loggedIn: true
-                    });
+                    sessionStorage.setItem("id", id.toString());
+                    sessionStorage.setItem("firstName", firstName);
+                    sessionStorage.setItem("lastName", lastName);
+                    sessionStorage.setItem("role", role);
+                    sessionStorage.setItem("loggedIn", true);
                     sessionStorage.setItem("token", token);
+                    setUser({ id, firstName, lastName, role, loggedIn: true });
                 }
                 debugger;
                 axios.defaults.headers.common[
                     "Authorization"] = `Bearer ${sessionStorage.getItem(token)}`;
                 console.log("previousUrl : " + previousUrl);
-                debugger;
-                navigate(previousUrl);
                 toast.success(response.data.message);
+                navigate("/");
 
             })
             .catch((error) => {
@@ -100,10 +110,13 @@ const Login = () => {
                     autoClose: 1700
                 });
             })
+            .finally(() => {
+                setLoading(false);
+            })
     }
 
     return (
-        <>
+        <> {loading && <Loading/>}
             {/* <Navbar/> */}
             <Wrapper>
                 <div className="form p-4">

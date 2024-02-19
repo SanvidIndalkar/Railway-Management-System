@@ -5,9 +5,11 @@ import styled from "styled-components";
 import userService from "../Services/user.service";
 import { Nav, Navbar } from "react-bootstrap";
 import adminService from "../Services/admin.service";
+import Loading from "../Components/Loading/Loading";
 
 function Register() {
 
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -35,6 +37,7 @@ function Register() {
         if (email === "") {
             toast.error("Please provide valid email to generate OTP!");
         } else {
+            setLoading(true);
             userService.generateOTP(email)
                 .then((response) => {
                     console.log(response);
@@ -44,6 +47,9 @@ function Register() {
                 })
                 .catch((error) => {
                     console.log(error.response.error);
+                })
+                .finally(() => {
+                    setLoading(false);
                 })
         }
     };
@@ -74,7 +80,7 @@ function Register() {
         if(formData.isAdmin){
             setFormData({...formData, role : "ROLE_ADMIN"});
         }
-
+        setLoading(true);
         userService.register(formData.otp, formData)
             .then((response) => {
                 console.log(response);
@@ -90,10 +96,13 @@ function Register() {
                 }
                 toast.error("Something went wrong...");
             })
+            .finally(() => {
+                setLoading(false);
+            })
     };
 
     return (
-        <>
+        <> {loading && <Loading/>}
             {/* <Navbar /> */}
             <Wrapper>
                 <div className="container p-1">

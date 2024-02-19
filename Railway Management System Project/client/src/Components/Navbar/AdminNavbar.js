@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components'
 
 function AdminNavbar() {
-    return (
+    return (    
         <>
             <Wrapper>
                 <nav className="navbar navbar-expand-lg navbar-light bg-light container-fluid pad">
@@ -32,7 +32,7 @@ function AdminNavbar() {
                                     </p></Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link to="/" className="nav-link"><p>
+                                    <Link to="/logout" className="nav-link"><p>
                                         Logout
                                     </p></Link>
                                 </li>

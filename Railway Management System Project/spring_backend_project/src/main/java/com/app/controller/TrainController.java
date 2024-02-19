@@ -19,6 +19,7 @@ import com.app.dto.CustomResponse;
 import com.app.dto.StopDTO;
 import com.app.dto.TrainClassesDTO;
 import com.app.dto.TrainDTO;
+import com.app.dto.TrainEditDTO;
 import com.app.dto.TrainOnlyDTO;
 import com.app.dto.TrainRescheduleDTO;
 import com.app.dto.TrainSrcDestDateDTO;
@@ -83,6 +84,17 @@ public class TrainController {
         }
         return ResponseEntity.status(HttpStatus.OK)
         		.body(new CustomResponse<>(false, "Success!", train));
+    }
+    
+    @PutMapping("/editTrain/{trainId}")
+    public ResponseEntity<?> editTrain(@PathVariable Long trainId, @RequestBody TrainEditDTO trainEditDTO){
+    	boolean done = trainService.editTrain(trainId, trainEditDTO);
+    	if(done) {
+    		return ResponseEntity.status(HttpStatus.OK)
+            		.body(new CustomResponse<>(false, "Successfully Edited Train Info!", null));
+    	}
+    	return ResponseEntity.status(HttpStatus.OK)
+        		.body(new CustomResponse<>(true, "Editing Train Failed!", null));
     }
     
     // Reschedule a train by Train Number

@@ -1,7 +1,11 @@
 import httpClient from '../http-common';
 
+const editTrain = (trainId,data) => {
+    return httpClient.put(`/trains/editTrain/${trainId}`,data);
+}
+
 const rescheduleTrain = (data) => {
-    return httpClient.put('/trains//reschedule', data);
+    return httpClient.put('/trains/reschedule', data);
 };
 
 const findTrainBySourceDestinationDate = (data) => {
@@ -14,7 +18,7 @@ const findTrainsByTwoStopsInSequence = (data) => {
 
 const addTrain = (data) => {
     return httpClient.post('/trains/add', data);
-};
+};  
 
 const findTrainAllDetails = (trainId) => {
     return httpClient.get(`/trains/searchTrainAllDetails/${trainId}`);
@@ -40,4 +44,4 @@ const getAllTrainsByAdmin = (adminId) => {
     return httpClient.get(`/trains/admin/allTrain/${adminId}`);
 };
 
-export default { rescheduleTrain, findTrainBySourceDestinationDate, findTrainsByTwoStopsInSequence, addTrain, findTrainAllDetails, findTrainByNumber, findTrainByName, findTrainDetailsById, getAllTrains, getAllTrainsByAdmin };
+export default {editTrain, rescheduleTrain, findTrainBySourceDestinationDate, findTrainsByTwoStopsInSequence, addTrain, findTrainAllDetails, findTrainByNumber, findTrainByName, findTrainDetailsById, getAllTrains, getAllTrainsByAdmin };

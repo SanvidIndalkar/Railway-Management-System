@@ -5,7 +5,7 @@ const bookTrainWithPassengers = (trainId, data) => {
 };
 
 const bookingDetailsOfTrain = (trainId) => {
-    return httpClient.get(`/booking/booking/${trainId}`);
+    return httpClient.get(`/booking/bookings/${trainId}`);
 };
 
 const passengerDetailsOfPNR = (pnr) => {

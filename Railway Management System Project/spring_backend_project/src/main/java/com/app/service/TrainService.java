@@ -3,6 +3,7 @@ package com.app.service;
 import java.util.List;
 
 import com.app.dto.TrainDTO;
+import com.app.dto.TrainEditDTO;
 import com.app.dto.TrainOnlyDTO;
 import com.app.dto.TrainRescheduleDTO;
 import com.app.dto.TrainSrcDestDateDTO;
@@ -29,4 +30,6 @@ public interface TrainService {
 	List<TrainDTO> findTrainsByTwoStopsInSequence(TrainSrcDestDateDTO searchInfo);
 
 	String rescheduleTrain(TrainRescheduleDTO trainRescheduleDTO);
+
+	boolean editTrain(Long trainId, TrainEditDTO trainEditDTO);
 }

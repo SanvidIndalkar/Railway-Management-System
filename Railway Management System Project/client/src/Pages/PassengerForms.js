@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import bookingService from '../Services/booking.service';
 import { toast } from 'react-toast';
+import Loading from '../Components/Loading/Loading';
 
 const PassengerForms = () => {
 
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     console.log(location)
@@ -45,6 +47,7 @@ const PassengerForms = () => {
             // <BookingDetails passengersData={passengersData}/>
             // Reset the form after submission if needed
             dataForPassengers = {...dataForPassengers, passengersDTO : passengersData}
+            setLoading(true);
             bookingService.bookTrainWithPassengers(dataForPassengers.trainId, dataForPassengers)
             .then((response) => {
                 console.log(response);
@@ -55,6 +58,9 @@ const PassengerForms = () => {
                 console.log(error);
                 toast.error(error.response.data.message);
             })
+            .finally(() => {
+                setLoading(false);
+            })
             
         } else {
             alert('Please fill in all fields for each passenger.');
@@ -62,7 +68,7 @@ const PassengerForms = () => {
     };
 
     return (
-        <>
+        <> {loading && <Loading/>}
             {/* <Navbar /> */}
             <Wrapper>
                 <form onSubmit={handleSubmit} className="mt-5">
