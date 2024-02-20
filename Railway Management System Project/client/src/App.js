@@ -23,9 +23,9 @@ import UserContext from './Contexts/UserContext';
 import PNRStatus from './Pages/PNRStatus';
 import ForgotPassowrd from './Pages/ForgotPassword';
 import ResetPassword from './Pages/ResetPassword';
+import AboutUs from './Pages/AboutUs';
 
 function App() {
-  debugger;
   const {user, setUser} = useContext(UserContext);
   const routeRoles = {
     '/confirm-booking': ['ROLE_USER'],
@@ -63,6 +63,7 @@ function App() {
           <Route path='/check-pnr' element={<PNRStatus/>}/>
           <Route path='/forgot-password' element={<ForgotPassowrd/>}/>
           <Route path='/reset-password' element={<ResetPassword/>}/>
+          <Route path='/about-us' element={<AboutUs/>}/>
           {/* Protected routes */}
           <Route path="/confirm-booking" element={<ConfirmBooking />} roles={routeRoles['/confirm-booking']} />
           <Route path="/passenger-forms" element={<PassengerForms />} roles={routeRoles['/passenger-forms']} />

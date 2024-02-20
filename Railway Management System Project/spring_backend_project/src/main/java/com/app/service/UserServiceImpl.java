@@ -69,9 +69,14 @@ public class UserServiceImpl implements UserService {
 
             // Store reset token with creation time in memory with email as key
             resetTokenMap.put(email, new ResetToken(resetToken, creationTime));
-
+            String msg = "You have requested to reset your password. Please follow the instructions below to reset your password:\n\n" +
+            	    "1. Use the following token to reset your password:\n" +
+            	    "   Reset Token: " + resetToken +
+            	    "2. This token will expire in 5 minutes for security purposes.\n\n" +
+            	    "If you did not request this password reset, please ignore this email.\n\n" +
+            	    "Thank you,\n";
             // Send email with reset link
-            emailSender.sendEmail(email, "Reset Password","Your token for resetting password :" +resetToken + " Will Expire in 5 minutes!");
+            emailSender.sendEmail(email, "Reset Password",msg);
         }
     }
 	
