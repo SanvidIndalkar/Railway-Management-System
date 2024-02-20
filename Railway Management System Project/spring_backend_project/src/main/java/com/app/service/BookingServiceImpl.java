@@ -189,8 +189,8 @@ public class BookingServiceImpl implements BookingService {
 				+ "Train Number: " + train.getTrainName() + "\r\n"
 				+ "Date: " + train.getSourceDepartureDate() + "\r\n"
 				+ "Time: " + train.getSourceDepartureTime() + "\r\n"
-				+ "Source: " + bookingSaved.getSource().getStationName() + "\r\n"
-				+ "Destination: " + bookingSaved.getDestination().getStationName() + "\r\n"
+				+ "Source: " + source.getStationName() + "\r\n"
+				+ "Destination: " + destination.getStationName() + "\r\n"
 				+ "Total Seats Reserved: " + totalPassengers + "\r\n"
 				+ "Passengers' Names and Seat Number:\r\n\r\n";
 

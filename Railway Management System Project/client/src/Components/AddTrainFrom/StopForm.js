@@ -7,7 +7,7 @@ const StopForm = ({ index, formData, setFormData, allStations, minDate, maxDate,
         station: { id: 0 },
         sequence: index + 1,
         arrivalDate: "",
-        departureTime: ""
+        arrivalTime: ""
     });
 
 
@@ -74,13 +74,13 @@ const StopForm = ({ index, formData, setFormData, allStations, minDate, maxDate,
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor={`departureTime${index}`} className="form-label">Departure Time</label>
+                    <label htmlFor={`arrivalTime${index}`} className="form-label">Departure Time</label>
                     <input
                         type="time"
                         className="form-control"
-                        id={`departureTime${index}`}
-                        name="departureTime"
-                        value={stopFormData.departureTime}
+                        id={`arrivalTime${index}`}
+                        name="arrivalTime"
+                        value={stopFormData.arrivalTime}
                         onChange={handleInputChange}
                         required // Adding required attribute
                     />

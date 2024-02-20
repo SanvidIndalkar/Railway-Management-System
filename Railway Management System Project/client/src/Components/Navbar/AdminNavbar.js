@@ -27,7 +27,7 @@ function AdminNavbar() {
                                     </Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link to="/about" className="nav-link"><p>
+                                    <Link to="/about-us" className="nav-link"><p>
                                         About
                                     </p></Link>
                                 </li>

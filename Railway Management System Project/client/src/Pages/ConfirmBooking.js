@@ -44,14 +44,14 @@ function ConfirmBooking() {
 
     const getArrivalTimeById = (id) => {
         // Check if the source id matches
-        if (train.source.id === id) {
+        if (train.source.id == id) {
             return train.sourceDepartureTime;
         }
     
         // Iterate over stops array
         for (const stop of train.stops) {
             // Check if the stop's station id matches
-            if (stop.station.id === id) {
+            if (stop.station.id == id) {
                 return stop.arrivalTime;
             }
         }
@@ -84,7 +84,6 @@ function ConfirmBooking() {
         // Return the formatted string
         return `${monthName} ${day}, ${year}`;
     }
-
     return (
         <Wrapper>
 
@@ -122,13 +121,13 @@ function ConfirmBooking() {
                         <label htmlFor="fromCity" className="form-label">
                             <p>From :</p>
                         </label>
-                        <p className="form-control-static text-muted">{allStations[parseInt(searchData.fromCity)].stationName}</p>
+                        <p className="form-control-static text-muted">{allStations[parseInt(searchData.fromCity)-1].stationName}</p>
                     </div>
                     <div className="label-value m-2 p-2">
                         <label htmlFor="toCity" className="form-label">
                             <p>To :</p>
                         </label>
-                        <p className="form-control-static text-muted">{allStations[parseInt(searchData.toCity)].stationName}</p>
+                        <p className="form-control-static text-muted">{allStations[parseInt(searchData.toCity)-1].stationName}</p>
                     </div>
 
                     <div className="label-value m-2 p-2">
